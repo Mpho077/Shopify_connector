@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <!-- ============================================================ -->
+    <!--                   DASHBOARD ACTION                           -->
+    <!-- ============================================================ -->
+    <record id="action_shopify_dashboard" model="ir.actions.client">
+        <field name="name">Shopify Dashboard</field>
+        <field name="tag">corvex_shopify_connector_dashboard</field>
+    </record>
+
+    <!-- ============================================================ -->
+    <!--         ADD DASHBOARD TO EMIPRO's SHOPIFY MENU               -->
+    <!-- ============================================================ -->
+    <menuitem id="menu_shopify_dashboard"
+        name="Dashboard"
+        parent="shopify_ept.shopify_instance_menu_item"
+        action="action_shopify_dashboard"
+        sequence="0"/>
+
+    <!-- ============================================================ -->
+    <!--      ADD OUR CUSTOM ITEMS UNDER CONFIGURATION                -->
+    <!-- ============================================================ -->
+    <menuitem id="menu_shopify_config_error_notifications"
+        name="Error Notifications"
+        parent="shopify_ept.menu_configuration_ept"
+        action="action_shopify_error_notification"
+        sequence="20"/>
+
+    <menuitem id="menu_shopify_config_price_sync"
+        name="Price Sync"
+        parent="shopify_ept.menu_configuration_ept"
+        action="action_shopify_price_sync"
+        sequence="25"/>
+</odoo>
