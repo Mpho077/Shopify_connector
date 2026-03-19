@@ -1,0 +1,235 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+    <t t-name="corvex_shopify_connector.ShopifyDashboard">
+        <div class="sd_dashboard o_action">
+
+            <!-- Loading -->
+            <t t-if="state.loading">
+                <div class="sd_loading">
+                    <div class="sd_loading_spinner"/>
+                    <span>Loading dashboard...</span>
+                </div>
+            </t>
+
+            <!-- No Instances -->
+            <t t-if="state.instances.length === 0 and !state.loading">
+                <div class="sd_empty_state">
+                    <div class="sd_empty_icon">
+                        <i class="fa fa-shopping-bag"/>
+                    </div>
+                    <h3>No Active Shopify Instances</h3>
+                    <p>Create and activate a Shopify instance to see your dashboard.</p>
+                    <button class="btn btn-primary" t-on-click="openInstances">
+                        <i class="fa fa-plus me-2"/>Go to Instances
+                    </button>
+                </div>
+            </t>
+
+            <t t-if="state.instances.length > 0 and !state.loading">
+
+                <!-- Top Bar -->
+                <div class="sd_topbar">
+                    <div class="sd_topbar_left">
+                        <div class="sd_logo">
+                            <i class="fa fa-shopping-bag"/>
+                        </div>
+                        <div>
+                            <h1 class="sd_title">Shopify Dashboard</h1>
+                            <span class="sd_subtitle" t-esc="state.data.instance_name"/>
+                        </div>
+                    </div>
+                    <div class="sd_topbar_right">
+                        <select class="sd_select" t-on-change="onInstanceChange">
+                            <t t-foreach="state.instances" t-as="inst" t-key="inst.id">
+                                <option t-att-value="inst.id"
+                                        t-att-selected="inst.id === state.selectedInstanceId">
+                                    <t t-esc="inst.name"/>
+                                </option>
+                            </t>
+                        </select>
+                        <select class="sd_select" t-on-change="onPeriodChange">
+                            <option value="current_week">This Week</option>
+                            <option value="current_month">This Month</option>
+                            <option value="current_year">This Year</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Error Alert -->
+                <t t-if="state.data.unacknowledged_error_count > 0">
+                    <div class="sd_alert_error" t-on-click="openUnacknowledgedErrors">
+                        <div class="sd_alert_icon">
+                            <i class="fa fa-exclamation-triangle"/>
+                        </div>
+                        <div class="sd_alert_body">
+                            <strong t-esc="state.data.unacknowledged_error_count"/> unacknowledged error(s) require attention
+                        </div>
+                        <div class="sd_alert_action">
+                            View Errors <i class="fa fa-arrow-right ms-1"/>
+                        </div>
+                    </div>
+                </t>
+
+                <!-- Content Area -->
+                <div class="sd_content">
+
+                    <!-- Revenue Cards -->
+                    <div class="sd_revenue_row">
+                        <div class="sd_revenue_card sd_revenue_primary">
+                            <div class="sd_revenue_label">Total Sales</div>
+                            <div class="sd_revenue_value" t-esc="formatCurrency(state.data.total_sales)"/>
+                            <div t-attf-class="sd_revenue_badge {{ state.data.percentage_change >= 0 ? 'sd_badge_up' : 'sd_badge_down' }}">
+                                <i t-attf-class="fa {{ state.data.percentage_change >= 0 ? 'fa-arrow-up' : 'fa-arrow-down' }} me-1"/>
+                                <t t-esc="Math.abs(state.data.percentage_change).toFixed(1)"/>%
+                                <span class="sd_badge_period">vs previous <t t-esc="periodLabel.toLowerCase()"/></span>
+                            </div>
+                        </div>
+                        <div class="sd_revenue_card">
+                            <div class="sd_revenue_label">Average Order Value</div>
+                            <div class="sd_revenue_value sd_revenue_secondary" t-esc="formatCurrency(state.data.avg_order_value)"/>
+                            <div class="sd_revenue_hint">
+                                Based on <t t-esc="formatNumber(state.data.order_count_period)"/> orders this period
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Stat Cards Grid -->
+                    <div class="sd_stats_grid">
+                        <div class="sd_stat_card" t-on-click="openOrders">
+                            <div class="sd_stat_top">
+                                <div class="sd_stat_icon sd_icon_orders">
+                                    <i class="fa fa-shopping-cart"/>
+                                </div>
+                                <div class="sd_stat_arrow">
+                                    <i class="fa fa-chevron-right"/>
+                                </div>
+                            </div>
+                            <div class="sd_stat_info">
+                                <div class="sd_stat_value" t-esc="formatNumber(state.data.order_count)"/>
+                                <div class="sd_stat_label">Orders</div>
+                            </div>
+                        </div>
+
+                        <div class="sd_stat_card" t-on-click="openProducts">
+                            <div class="sd_stat_top">
+                                <div class="sd_stat_icon sd_icon_products">
+                                    <i class="fa fa-cube"/>
+                                </div>
+                                <div class="sd_stat_arrow">
+                                    <i class="fa fa-chevron-right"/>
+                                </div>
+                            </div>
+                            <div class="sd_stat_info">
+                                <div class="sd_stat_value" t-esc="formatNumber(state.data.product_count)"/>
+                                <div class="sd_stat_label">Products</div>
+                            </div>
+                        </div>
+
+                        <div class="sd_stat_card" t-on-click="openCustomers">
+                            <div class="sd_stat_top">
+                                <div class="sd_stat_icon sd_icon_customers">
+                                    <i class="fa fa-users"/>
+                                </div>
+                                <div class="sd_stat_arrow">
+                                    <i class="fa fa-chevron-right"/>
+                                </div>
+                            </div>
+                            <div class="sd_stat_info">
+                                <div class="sd_stat_value" t-esc="formatNumber(state.data.customer_count)"/>
+                                <div class="sd_stat_label">Customers</div>
+                            </div>
+                        </div>
+
+                        <div class="sd_stat_card" t-on-click="openShippedOrders">
+                            <div class="sd_stat_top">
+                                <div class="sd_stat_icon sd_icon_shipped">
+                                    <i class="fa fa-truck"/>
+                                </div>
+                                <div class="sd_stat_arrow">
+                                    <i class="fa fa-chevron-right"/>
+                                </div>
+                            </div>
+                            <div class="sd_stat_info">
+                                <div class="sd_stat_value" t-esc="formatNumber(state.data.shipped_order_count)"/>
+                                <div class="sd_stat_label">Shipped</div>
+                            </div>
+                        </div>
+
+                        <div class="sd_stat_card" t-on-click="openRefunds">
+                            <div class="sd_stat_top">
+                                <div class="sd_stat_icon sd_icon_refunds">
+                                    <i class="fa fa-undo"/>
+                                </div>
+                                <div class="sd_stat_arrow">
+                                    <i class="fa fa-chevron-right"/>
+                                </div>
+                            </div>
+                            <div class="sd_stat_info">
+                                <div class="sd_stat_value" t-esc="formatNumber(state.data.refund_count)"/>
+                                <div class="sd_stat_label">Refunds</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Bottom Row: Queue Status + Quick Actions -->
+                    <div class="sd_bottom_row">
+                        <!-- Queue Status -->
+                        <div class="sd_bottom_card">
+                            <h3 class="sd_section_title">Queue Status</h3>
+                            <t t-if="state.data.queue_draft + state.data.queue_progress + state.data.queue_failed > 0">
+                                <div class="sd_queue_badges" t-on-click="openQueues">
+                                    <t t-if="state.data.queue_progress > 0">
+                                        <div class="sd_queue_badge sd_queue_badge_processing">
+                                            <span class="sd_queue_count" t-esc="state.data.queue_progress"/>
+                                            <span>Processing</span>
+                                        </div>
+                                    </t>
+                                    <t t-if="state.data.queue_draft > 0">
+                                        <div class="sd_queue_badge sd_queue_badge_draft">
+                                            <span class="sd_queue_count" t-esc="state.data.queue_draft"/>
+                                            <span>Draft</span>
+                                        </div>
+                                    </t>
+                                    <t t-if="state.data.queue_failed > 0">
+                                        <div class="sd_queue_badge sd_queue_badge_failed">
+                                            <span class="sd_queue_count" t-esc="state.data.queue_failed"/>
+                                            <span>Failed</span>
+                                        </div>
+                                    </t>
+                                </div>
+                            </t>
+                            <t t-else="">
+                                <div style="color: #adb5bd; font-size: 0.88rem;">All queues clear</div>
+                            </t>
+                        </div>
+
+                        <!-- Quick Actions -->
+                        <div class="sd_bottom_card">
+                            <h3 class="sd_section_title">Quick Actions</h3>
+                            <div class="sd_actions_grid">
+                                <button class="sd_action_btn sd_action_primary" t-on-click="openPerformOperation">
+                                    <i class="fa fa-play-circle"/>
+                                    <span>Sync Operations</span>
+                                </button>
+                                <button class="sd_action_btn" t-on-click="openQueues">
+                                    <i class="fa fa-list-ol"/>
+                                    <span>Queues</span>
+                                </button>
+                                <button class="sd_action_btn" t-on-click="openLogs">
+                                    <i class="fa fa-clock-o"/>
+                                    <span>Logs</span>
+                                </button>
+                                <button class="sd_action_btn" t-on-click="openReport">
+                                    <i class="fa fa-bar-chart"/>
+                                    <span>Reports</span>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                </div><!-- end sd_content -->
+
+            </t>
+        </div>
+    </t>
+</templates>
