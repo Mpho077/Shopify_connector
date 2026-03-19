@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <record id="res_config_settings_view_form_shopify" model="ir.ui.view">
+        <field name="name">res.config.settings.view.form.shopify.connector</field>
+        <field name="model">res.config.settings</field>
+        <field name="inherit_id" ref="base.res_config_settings_view_form"/>
+        <field name="priority">99</field>
+        <field name="arch" type="xml">
+            <xpath expr="//form" position="inside">
+                <app data-string="Shopify Auto-Invoice" data-key="corvex_shopify_connector">
+                    <block title="Auto-Invoice">
+                        <setting help="Automatically create and post an invoice when a Shopify order is confirmed.">
+                            <field name="shopify_auto_create_invoice"/>
+                        </setting>
+                        <setting help="Automatically register a payment on the invoice."
+                                 invisible="not shopify_auto_create_invoice">
+                            <field name="shopify_auto_register_payment"/>
+                            <div class="mt8" invisible="not shopify_auto_register_payment">
+                                <label for="shopify_payment_journal_id" string="Payment Journal"/>
+                                <field name="shopify_payment_journal_id"/>
+                            </div>
+                        </setting>
+                    </block>
+                </app>
+            </xpath>
+        </field>
+    </record>
+</odoo>
