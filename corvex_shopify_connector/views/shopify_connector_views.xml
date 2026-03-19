@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <!-- ============================================================ -->
+    <!--      ADD OUR CUSTOM ITEMS UNDER CONFIGURATION                -->
+    <!-- ============================================================ -->
+    <menuitem id="menu_shopify_config_error_notifications"
+        name="Error Notifications"
+        parent="shopify_ept.menu_configuration_ept"
+        action="action_shopify_error_notification"
+        sequence="20"/>
+
+    <menuitem id="menu_shopify_config_price_sync"
+        name="Price Sync"
+        parent="shopify_ept.menu_configuration_ept"
+        action="action_shopify_price_sync"
+        sequence="25"/>
+</odoo>
