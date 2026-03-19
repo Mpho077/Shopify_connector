@@ -1,3 +1,0 @@
-id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
-access_shopify_price_sync_user,shopify.price.sync user,model_shopify_price_sync,base.group_user,1,1,1,1
-access_shopify_error_notification_user,shopify.error.notification user,model_shopify_error_notification,base.group_user,1,1,1,1
