@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <!-- ============================================================ -->
+    <!--              SHOPIFY PRICE SYNC VIEWS                        -->
+    <!-- ============================================================ -->
+
+    <record id="shopify_price_sync_view_form" model="ir.ui.view">
+        <field name="name">shopify.price.sync.form</field>
+        <field name="model">shopify.price.sync</field>
+        <field name="arch" type="xml">
+            <form>
+                <header>
+                    <button name="action_test_connection" type="object" string="Test Connection" class="btn-secondary"/>
+                    <button name="action_sync_prices" type="object" string="Sync Prices Now" class="btn-primary"/>
+                    <button name="action_register_webhook" type="object" string="Register Webhook" class="btn-secondary"
+                            invisible="webhook_id"/>
+                    <button name="action_unregister_webhook" type="object" string="Unregister Webhook" class="btn-secondary text-danger"
+                            invisible="not webhook_id"/>
+                </header>
+                <sheet>
+                    <div class="oe_title">
+                        <h1><field name="name" placeholder="e.g. My Shopify Store"/></h1>
+                    </div>
+                    <group>
+                        <group string="Shopify Connection">
+                            <field name="shop_url" placeholder="mystore.myshopify.com"/>
+                            <field name="api_token" password="True"/>
+                            <field name="api_version"/>
+                        </group>
+                        <group string="Price Settings">
+                            <field name="update_list_price"/>
+                            <field name="pricelist_id"/>
+                            <field name="company_id" groups="base.group_multi_company"/>
+                        </group>
+                    </group>
+                    <group string="Sync Status">
+                        <field name="last_sync"/>
+                        <field name="sync_log"/>
+                    </group>
+                    <group string="Webhook (Real-Time Sync)">
+                        <field name="webhook_secret" password="True"/>
+                        <field name="webhook_url" widget="CopyClipboardChar"/>
+                        <field name="webhook_id" invisible="1"/>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="shopify_price_sync_view_tree" model="ir.ui.view">
+        <field name="name">shopify.price.sync.tree</field>
+        <field name="model">shopify.price.sync</field>
+        <field name="arch" type="xml">
+            <list>
+                <field name="name"/>
+                <field name="shop_url"/>
+                <field name="last_sync"/>
+                <field name="sync_log"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="action_shopify_price_sync" model="ir.actions.act_window">
+        <field name="name">Shopify Price Sync</field>
+        <field name="res_model">shopify.price.sync</field>
+        <field name="view_mode">list,form</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Configure Shopify Price Sync
+            </p>
+            <p>
+                Sync product prices from Shopify to Odoo. Products are matched by SKU.
+            </p>
+        </field>
+    </record>
+</odoo>
