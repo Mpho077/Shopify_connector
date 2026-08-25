@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <record id="shopify_sync_job_list" model="ir.ui.view">
+        <field name="name">shopify.sync.job.list</field>
+        <field name="model">shopify.sync.job</field>
+        <field name="arch" type="xml">
+            <list>
+                <field name="id"/>
+                <field name="name"/>
+                <field name="job_type"/>
+                <field name="state"/>
+                <field name="attempts"/>
+                <field name="create_date"/>
+                <field name="processed_date"/>
+            </list>
+        </field>
+    </record>
+    <record id="shopify_sync_job_form" model="ir.ui.view">
+        <field name="name">shopify.sync.job.form</field>
+        <field name="model">shopify.sync.job</field>
+        <field name="arch" type="xml">
+            <form>
+                <header>
+                    <button name="action_process_now"
+                            type="object"
+                            string="Process now"
+                            class="btn-primary"
+                            invisible="state == 'processing'"
+                            confirm="Run this job now against current Shopify data? Shopify is not changed."/>
+                    <field name="state" widget="statusbar"
+                           statusbar_visible="pending,processing,done,failed"/>
+                </header>
+                <sheet>
+                    <group>
+                        <field name="name"/>
+                        <field name="job_type"/>
+                        <field name="state"/>
+                        <field name="attempts"/>
+                        <field name="max_attempts"/>
+                        <field name="processed_date"/>
+                    </group>
+                    <label for="payload"/>
+                    <field name="payload" nolabel="1"/>
+                    <label for="error"/>
+                    <field name="error" nolabel="1"/>
+                </sheet>
+            </form>
+        </field>
+    </record>
+    <record id="action_shopify_sync_job" model="ir.actions.act_window">
+        <field name="name">Orders</field>
+        <field name="res_model">shopify.sync.job</field>
+        <field name="view_mode">list,form</field>
+    </record>
+</odoo>

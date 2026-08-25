@@ -1,0 +1,380 @@
+/* Shopify Ops dashboard — reskin to the approved indigo/card mock.
+   All styles scoped under .shopify-ops-dashboard. No @import (bundled). */
+
+.shopify-ops-dashboard {
+  --bg: #f5f4fa;
+  --side-bg: #eceaf4;
+  --card: #ffffff;
+  --ink: #23222b;
+  --dim: #8f8ca3;
+  --faint: #b6b4c6;
+  --line: #e7e5f0;
+  --line-soft: #efedf6;
+  --accent: #5e4bb6;
+  --accent-hover: #4c3a9e;
+  --accent-soft: #efecfa;
+  --link: #4a6cf7;
+  --ok: #1b9e77;
+  --ok-soft: #e3f6ef;
+  --red: #e05260;
+  --red-soft: #fdecec;
+  --amber: #c77700;
+  --orange: #e08a3d;
+  --blue: #3d6fe0;
+  --teal: #2aa7a0;
+  --magenta: #c0458f;
+  --mono: "JetBrains Mono", ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+  --sans: "Inter", -apple-system, "Segoe UI", sans-serif;
+
+  height: 100%;
+  overflow: hidden;
+  background: var(--bg);
+  color: var(--ink);
+  font-family: var(--sans);
+  font-size: 14px;
+  line-height: 1.45;
+  font-variant-numeric: tabular-nums;
+}
+
+.shopify-ops-dashboard .sod-layout { display: flex; height: 100%; }
+.shopify-ops-dashboard .sod-ic svg { width: 17px; height: 17px; display: block; }
+
+/* ===================== sidebar ===================== */
+.shopify-ops-dashboard .sod-side {
+  width: 216px;
+  flex: none;
+  background: var(--side-bg);
+  border-right: 1px solid var(--line);
+  padding: 14px 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  overflow-y: auto;
+}
+.shopify-ops-dashboard .sod-sideitem {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 12px;
+  border-radius: 9px;
+  font-size: 13px;
+  font-weight: 600;
+  color: #4d4a63;
+  text-decoration: none;
+  border-left: 3px solid transparent;
+}
+.shopify-ops-dashboard a.sod-sideitem:hover { background: rgba(255,255,255,.6); text-decoration: none; color: var(--accent); }
+.shopify-ops-dashboard .sod-sideitem.sod-active {
+  background: var(--card);
+  color: var(--accent);
+  border-left-color: var(--accent);
+  box-shadow: 0 1px 3px rgba(28, 20, 71, .07);
+}
+.shopify-ops-dashboard .sod-sideitem.sod-inert { color: #7d7a92; font-weight: 500; }
+.shopify-ops-dashboard .sod-sidecap {
+  font-size: 10px;
+  letter-spacing: .16em;
+  color: var(--dim);
+  font-weight: 700;
+  margin: 16px 12px 6px;
+}
+.shopify-ops-dashboard .sod-status {
+  margin-top: auto;
+  background: var(--card);
+  border-radius: 12px;
+  padding: 12px 14px;
+  box-shadow: 0 1px 3px rgba(28, 20, 71, .07);
+  font-size: 12px;
+}
+.shopify-ops-dashboard .sod-statusline { display: flex; align-items: center; gap: 8px; font-weight: 600; }
+.shopify-ops-dashboard .sod-statusmeta {
+  display: flex; align-items: center; justify-content: space-between;
+  margin-top: 6px; color: var(--dim); font-size: 11px;
+}
+
+/* ===================== main ===================== */
+.shopify-ops-dashboard .sod-main {
+  flex: 1;
+  overflow-y: auto;
+  padding: 20px 26px 60px;
+}
+.shopify-ops-dashboard .sod-pagehead {
+  display: flex; align-items: baseline; justify-content: space-between;
+  gap: 16px; margin-bottom: 18px;
+}
+.shopify-ops-dashboard .sod-title { font-size: 21px; font-weight: 800; letter-spacing: .01em; }
+.shopify-ops-dashboard .sod-titledot { display: inline-block; width: 6px; height: 6px; border-radius: 50%; background: var(--accent); margin: 0 9px 2px; vertical-align: middle; }
+.shopify-ops-dashboard .sod-subtitle { font-size: 11px; letter-spacing: .18em; color: var(--accent); font-weight: 700; }
+.shopify-ops-dashboard .sod-headmeta { display: flex; align-items: center; gap: 8px; font-size: 12px; color: var(--dim); white-space: nowrap; }
+.shopify-ops-dashboard .sod-sep { color: var(--faint); }
+
+/* cards */
+.shopify-ops-dashboard .sod-card {
+  background: var(--card);
+  border-radius: 14px;
+  box-shadow: 0 1px 2px rgba(28, 20, 71, .05), 0 4px 14px rgba(28, 20, 71, .04);
+}
+
+/* KPI row */
+.shopify-ops-dashboard .sod-kpis {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 14px;
+  margin-bottom: 24px;
+}
+.shopify-ops-dashboard a.sod-card {
+  text-decoration: none;
+  color: inherit;
+  display: block;
+  cursor: pointer;
+  transition: transform .15s ease, box-shadow .15s ease;
+}
+.shopify-ops-dashboard a.sod-card:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 2px 4px rgba(28, 20, 71, .08), 0 8px 20px rgba(28, 20, 71, .08);
+}
+.shopify-ops-dashboard a.sod-card:hover .sod-kpi-num { color: var(--accent); }
+.shopify-ops-dashboard .sod-kpi { padding: 16px 16px 13px; }
+.shopify-ops-dashboard .sod-kpi-icon {
+  width: 36px; height: 36px; border-radius: 10px;
+  display: flex; align-items: center; justify-content: center;
+  margin-bottom: 10px;
+}
+.shopify-ops-dashboard .sod-kpi-icon .sod-ic svg { width: 19px; height: 19px; }
+.shopify-ops-dashboard .sod-tint-purple { background: var(--accent-soft); color: var(--accent); }
+.shopify-ops-dashboard .sod-tint-green { background: var(--ok-soft); color: var(--ok); }
+.shopify-ops-dashboard .sod-tint-blue { background: #e8f0fe; color: var(--blue); }
+.shopify-ops-dashboard .sod-tint-orange { background: #fdf0e4; color: var(--orange); }
+.shopify-ops-dashboard .sod-tint-teal { background: #e4f5f4; color: var(--teal); }
+.shopify-ops-dashboard .sod-tint-magenta { background: #fbe9f3; color: var(--magenta); }
+.shopify-ops-dashboard .sod-kpi-lbl {
+  font-size: 10px; letter-spacing: .14em; text-transform: uppercase;
+  color: var(--dim); font-weight: 700;
+}
+.shopify-ops-dashboard .sod-kpi-num {
+  font-size: 26px; font-weight: 800; letter-spacing: -.01em; margin-top: 3px;
+}
+.shopify-ops-dashboard .sod-kpi-num.sod-redtext { color: var(--red); }
+.shopify-ops-dashboard .sod-kpi-delta { font-size: 12px; margin-top: 2px; font-weight: 600; }
+.shopify-ops-dashboard .sod-d-good { color: var(--ok); }
+.shopify-ops-dashboard .sod-d-bad { color: var(--red); }
+.shopify-ops-dashboard .sod-d-flat { color: var(--dim); font-weight: 500; }
+.shopify-ops-dashboard .sod-link { color: var(--link); text-decoration: none; }
+.shopify-ops-dashboard .sod-link:hover { text-decoration: underline; }
+
+/* section heads */
+.shopify-ops-dashboard .sod-sechead {
+  display: flex; align-items: baseline; justify-content: space-between;
+  gap: 14px; margin: 0 2px 10px;
+}
+.shopify-ops-dashboard .sod-sechead h2 {
+  font-size: 11px; letter-spacing: .2em; text-transform: uppercase;
+  color: var(--dim); font-weight: 700; margin: 0;
+}
+.shopify-ops-dashboard .sod-seenote { font-size: 11px; color: var(--faint); }
+
+/* engines */
+.shopify-ops-dashboard .sod-engines {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 14px;
+  margin-bottom: 24px;
+}
+.shopify-ops-dashboard .sod-engine {
+  display: flex; align-items: center; gap: 12px;
+  padding: 14px 16px;
+}
+.shopify-ops-dashboard .sod-eng-icon {
+  width: 38px; height: 38px; border-radius: 10px; flex: none;
+  display: flex; align-items: center; justify-content: center;
+}
+.shopify-ops-dashboard .sod-eng-icon .sod-ic svg { width: 19px; height: 19px; }
+.shopify-ops-dashboard .sod-engname { font-size: 13px; font-weight: 700; }
+.shopify-ops-dashboard .sod-engmeta {
+  display: flex; align-items: center; gap: 6px;
+  font-size: 11px; color: var(--dim); margin-top: 2px;
+}
+.shopify-ops-dashboard .sod-dot { width: 8px; height: 8px; border-radius: 50%; flex: none; }
+.shopify-ops-dashboard .sod-dot.sod-ok { background: var(--ok); }
+.shopify-ops-dashboard .sod-dot.sod-warn { background: var(--amber); }
+.shopify-ops-dashboard .sod-dot.sod-fail { background: var(--red); }
+.shopify-ops-dashboard .sod-dot.sod-off { background: #c4c6d0; }
+
+/* job queue card */
+.shopify-ops-dashboard .sod-queue { padding: 16px 18px 8px; margin-bottom: 24px; }
+.shopify-ops-dashboard .sod-queuehead {
+  display: flex; align-items: center; justify-content: space-between;
+  gap: 14px; flex-wrap: wrap; margin-bottom: 8px;
+}
+.shopify-ops-dashboard .sod-queuehead h2 {
+  font-size: 13px; letter-spacing: .12em; text-transform: uppercase;
+  font-weight: 800; margin: 0;
+}
+.shopify-ops-dashboard .sod-filters { display: flex; align-items: center; gap: 10px; }
+.shopify-ops-dashboard .sod-filters select,
+.shopify-ops-dashboard .sod-filters input {
+  background: var(--bg);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  font: inherit; font-size: 12px; color: var(--ink);
+  padding: 5px 9px; outline: none;
+}
+.shopify-ops-dashboard .sod-filters select:focus,
+.shopify-ops-dashboard .sod-filters input:focus { border-color: var(--accent); }
+.shopify-ops-dashboard .sod-filters input { width: 180px; }
+
+/* table */
+.shopify-ops-dashboard .sod-jobs { width: 100%; border-collapse: collapse; font-size: 13px; }
+.shopify-ops-dashboard .sod-jobs th {
+  font-size: 10px; letter-spacing: .16em; text-transform: uppercase;
+  color: var(--dim); text-align: left; font-weight: 700;
+  padding: 8px 10px; border-bottom: 1px solid var(--line);
+}
+.shopify-ops-dashboard .sod-jobs td { padding: 9px 10px; border-bottom: 1px solid var(--line-soft); vertical-align: middle; }
+.shopify-ops-dashboard .sod-jobs tbody tr.sod-row:last-child td { border-bottom: 0; }
+.shopify-ops-dashboard .sod-c-time { width: 74px; font-family: var(--mono); font-size: 11px; color: var(--dim); }
+.shopify-ops-dashboard .sod-c-actions { width: 300px; text-align: right; white-space: nowrap; }
+.shopify-ops-dashboard .sod-mono { font-family: var(--mono); font-size: 11.5px; }
+.shopify-ops-dashboard .sod-dim { color: var(--dim); }
+.shopify-ops-dashboard .sod-ord { font-weight: 600; }
+.shopify-ops-dashboard .sod-row { cursor: pointer; }
+.shopify-ops-dashboard .sod-row:hover > td { background: #faf9fd; }
+.shopify-ops-dashboard .sod-row.sod-expanded > td { background: var(--accent-soft); border-bottom: 0; }
+
+/* pills */
+.shopify-ops-dashboard .sod-pill {
+  display: inline-flex; align-items: center; gap: 6px;
+  font-family: var(--mono); font-size: 9.5px; letter-spacing: .08em; font-weight: 600;
+  padding: 3px 10px; border-radius: 99px; border: 1px solid transparent;
+}
+.shopify-ops-dashboard .sod-pilldot { width: 5px; height: 5px; border-radius: 50%; background: currentColor; }
+.shopify-ops-dashboard .sod-pill-running { background: var(--ok); color: #fff; }
+.shopify-ops-dashboard .sod-pill-running .sod-pilldot { background: #fff; animation: sod-pulse 1.4s ease-in-out infinite; }
+.shopify-ops-dashboard .sod-pill-done { color: var(--ok); border-color: rgba(27, 158, 119, .45); }
+.shopify-ops-dashboard .sod-pill-failed { color: var(--red); border-color: rgba(224, 82, 96, .6); background: var(--red-soft); }
+.shopify-ops-dashboard .sod-pill-pending { color: var(--dim); border-color: var(--line); }
+@keyframes sod-pulse { 0%, 100% { opacity: 1; } 50% { opacity: .35; } }
+
+/* buttons */
+.shopify-ops-dashboard .sod-btn {
+  display: inline-flex; align-items: center; gap: 6px;
+  font: inherit; font-size: 11.5px; font-weight: 600;
+  padding: 5px 11px; border-radius: 99px;
+  border: 1px solid var(--line); background: var(--card);
+  color: var(--dim); cursor: pointer; text-decoration: none;
+  margin-left: 6px;
+}
+.shopify-ops-dashboard .sod-btn .sod-ic svg { width: 13px; height: 13px; }
+.shopify-ops-dashboard .sod-btn:hover { border-color: var(--faint); }
+.shopify-ops-dashboard .sod-btn-red { color: var(--red); border-color: rgba(224, 82, 96, .55); }
+.shopify-ops-dashboard .sod-btn-red:hover { background: var(--red-soft); }
+.shopify-ops-dashboard .sod-btn-purple { color: var(--accent); border-color: rgba(94, 75, 182, .4); }
+.shopify-ops-dashboard .sod-btn-purple:hover { background: var(--accent-soft); text-decoration: none; }
+.shopify-ops-dashboard .sod-btn-ghost { border-color: transparent; padding: 5px 7px; }
+.shopify-ops-dashboard .sod-btn[disabled] { opacity: .55; cursor: default; }
+
+.shopify-ops-dashboard .sod-loadmore {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  padding: 14px 0 16px;
+}
+.shopify-ops-dashboard .sod-loadmore .sod-btn { margin-left: 0; }
+.shopify-ops-dashboard .sod-ghostbtn {
+  background: none; border: 0; padding: 3px; cursor: pointer;
+  color: var(--dim); border-radius: 6px; display: inline-flex;
+}
+.shopify-ops-dashboard .sod-ghostbtn:hover { background: var(--line-soft); color: var(--accent); }
+
+/* payload detail */
+.shopify-ops-dashboard .sod-detailrow > td { padding: 0; background: #faf9fd; }
+.shopify-ops-dashboard .sod-detailbox {
+  overflow: hidden; max-height: 0; transition: max-height .3s cubic-bezier(.22, 1, .36, 1);
+}
+.shopify-ops-dashboard .sod-detailbox.sod-open { max-height: 400px; }
+.shopify-ops-dashboard .sod-detailrow .sod-detailbox { padding: 0 12px; }
+.shopify-ops-dashboard .sod-detailbox.sod-open { padding: 12px; }
+.shopify-ops-dashboard .sod-payhead { display: flex; align-items: center; justify-content: space-between; margin-bottom: 6px; }
+.shopify-ops-dashboard .sod-lbl {
+  font-size: 10px; letter-spacing: .18em; color: var(--dim); font-weight: 700;
+}
+.shopify-ops-dashboard .sod-payload {
+  font-family: var(--mono); font-size: 11px; line-height: 1.65;
+  background: var(--bg); border: 1px solid var(--line); border-radius: 8px;
+  padding: 10px 12px; margin: 0;
+  white-space: pre-wrap; word-break: break-all; color: #4a4757;
+}
+.shopify-ops-dashboard .sod-payload.sod-err { color: var(--red); background: var(--red-soft); border-color: rgba(224, 82, 96, .3); }
+
+/* bottom panels */
+.shopify-ops-dashboard .sod-bottom { display: grid; grid-template-columns: 5fr 7fr; gap: 16px; }
+.shopify-ops-dashboard .sod-panel { padding: 14px 16px; }
+.shopify-ops-dashboard .sod-panelhead { margin-bottom: 4px; }
+.shopify-ops-dashboard .sod-hook {
+  display: flex; justify-content: space-between; align-items: center; gap: 10px;
+  padding: 8px 0; border-bottom: 1px solid var(--line-soft); font-size: 13px;
+}
+.shopify-ops-dashboard .sod-hook:last-child { border-bottom: 0; }
+.shopify-ops-dashboard .sod-logline {
+  display: flex; gap: 12px; padding: 7px 0 7px 10px;
+  border-bottom: 1px solid var(--line-soft);
+  border-left: 3px solid transparent; font-size: 12px;
+}
+.shopify-ops-dashboard .sod-logline.sod-warnline { border-left-color: var(--amber); }
+.shopify-ops-dashboard .sod-logline.sod-errline { border-left-color: var(--red); }
+.shopify-ops-dashboard .sod-logtime { font-family: var(--mono); font-size: 11px; color: var(--dim); flex: none; width: 66px; }
+
+/* job row "more" menu */
+.shopify-ops-dashboard .sod-menuwrap { position: relative; display: inline-block; }
+.shopify-ops-dashboard .sod-menu {
+  position: absolute;
+  right: 0;
+  top: calc(100% + 4px);
+  z-index: 50;
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  box-shadow: 0 8px 24px rgba(28, 20, 71, .14);
+  padding: 5px;
+  min-width: 150px;
+  display: flex;
+  flex-direction: column;
+}
+.shopify-ops-dashboard .sod-menu a,
+.shopify-ops-dashboard .sod-menu button {
+  display: block;
+  text-align: left;
+  font: inherit;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--ink);
+  background: none;
+  border: 0;
+  padding: 7px 10px;
+  border-radius: 7px;
+  cursor: pointer;
+  text-decoration: none;
+  white-space: nowrap;
+}
+.shopify-ops-dashboard .sod-menu a:hover,
+.shopify-ops-dashboard .sod-menu button:hover { background: var(--accent-soft); color: var(--accent); }
+.shopify-ops-dashboard .sod-menu .sod-menu-danger { color: var(--red); }
+.shopify-ops-dashboard .sod-menu .sod-menu-danger:hover { background: var(--red-soft); color: var(--red); }
+
+/* states */
+.shopify-ops-dashboard .sod-loading { padding: 6px 0; display: flex; flex-direction: column; gap: 14px; }
+.shopify-ops-dashboard .sod-skelrow { display: grid; grid-template-columns: repeat(5, 1fr); gap: 14px; }
+.shopify-ops-dashboard .sod-skel {
+  height: 18px; background: #e9e7f2; border-radius: 8px;
+  animation: sod-skel 1.4s ease-in-out infinite;
+}
+.shopify-ops-dashboard .sod-skelrow .sod-skel { height: 96px; border-radius: 14px; }
+@keyframes sod-skel { 0%, 100% { opacity: 1; } 50% { opacity: .45; } }
+.shopify-ops-dashboard .sod-empty {
+  margin-top: 24px; border: 1px dashed var(--line); border-radius: 14px;
+  padding: 34px 20px; text-align: center; background: var(--card);
+}
+.shopify-ops-dashboard .sod-empty-in { margin: 12px 0; border: 0; background: transparent; padding: 22px; }
+.shopify-ops-dashboard .sod-empty-title { font-weight: 700; margin: 0 0 4px; }
+.shopify-ops-dashboard .sod-empty-sub { color: var(--dim); font-size: 12px; margin: 0; }

@@ -1,0 +1,27 @@
+Odoo Proprietary License v1.0
+
+This software and associated files (the "Software") may only be used (executed,
+modified, executed after modifications) with a valid Odoo Enterprise
+Subscription for the correct number of users, or under the terms of the Odoo
+Apps Trial Agreement for the correct number of users, if applicable.
+
+You may develop Odoo modules based on the Software and distribute them under
+the license of your choice, provided that it is compatible with the terms of
+the Odoo Proprietary License (For example: LGPL, MIT, or proprietary licenses
+similar to this one).
+
+It is forbidden to publish, distribute, sublicense, or sell copies of the
+Software or modified copies of the Software.
+
+The above copyright notice and this permission notice must be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
+IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,
+DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
+ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+DEALINGS IN THE SOFTWARE.
+
+Copyright (C) 2026 Leeno Consult

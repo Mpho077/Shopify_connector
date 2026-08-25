@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <record id="view_picking_form_inherit_shopify_ops" model="ir.ui.view">
+        <field name="name">stock.picking.form.inherit.shopify.ops</field>
+        <field name="model">stock.picking</field>
+        <field name="inherit_id" ref="stock.view_picking_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//header" position="inside">
+                <field name="shopify_fulfillment_pushed" invisible="1"/>
+                <button name="action_push_fulfillment_to_shopify"
+                        string="Push to Shopify"
+                        type="object"
+                        class="btn-secondary"
+                        invisible="state != 'done' or not sale_id"/>
+            </xpath>
+        </field>
+    </record>
+</odoo>

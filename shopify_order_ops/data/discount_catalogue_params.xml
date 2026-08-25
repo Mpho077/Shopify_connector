@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo noupdate="1">
+    <record id="param_discount_catalogue_sync" model="ir.config_parameter">
+        <field name="key">shopify_order_ops.discount_catalogue_sync_enabled</field>
+        <field name="value">True</field>
+    </record>
+    <record id="param_discount_apply_manual" model="ir.config_parameter">
+        <field name="key">shopify_order_ops.discount_apply_manual_orders</field>
+        <field name="value">True</field>
+    </record>
+</odoo>

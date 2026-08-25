@@ -1,0 +1,307 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+<t t-name="shopify_order_ops.Dashboard">
+<div class="shopify-ops-dashboard">
+  <div class="sod-layout">
+
+    <!-- ===================== sidebar ===================== -->
+    <aside class="sod-side">
+      <div class="sod-sideitem sod-active">
+        <span class="sod-ic" t-out="icons.home"/><span>Dashboard</span>
+      </div>
+      <div class="sod-sidecap">OPERATIONS</div>
+      <a class="sod-sideitem" t-att-href="jobsUrl()" target="_blank">
+        <span class="sod-ic" t-out="icons.list"/><span>Orders</span>
+      </a>
+      <a class="sod-sideitem" t-att-href="logsUrl()" target="_blank">
+        <span class="sod-ic" t-out="icons.fileText"/><span>Sync Logs</span>
+      </a>
+      <a class="sod-sideitem" t-att-href="discountsUrl()" target="_blank">
+        <span class="sod-ic" t-out="icons.tag"/><span>Discounts</span>
+      </a>
+      <a class="sod-sideitem" t-att-href="mappingsUrl()" target="_blank">
+        <span class="sod-ic" t-out="icons.layers"/><span>Metadata Mappings</span>
+      </a>
+      <div class="sod-sidecap">MONITORING</div>
+      <a class="sod-sideitem" t-att-href="sideUrl('alerts', logsUrl())" target="_blank">
+        <span class="sod-ic" t-out="icons.bell"/><span>Alerts</span>
+      </a>
+
+      <div class="sod-status" t-if="state.data">
+        <div class="sod-statustitle">System Status</div>
+        <div class="sod-statusline">
+          <span class="sod-dot" t-att-class="state.data.health.all_healthy ? 'sod-ok' : 'sod-fail'"></span>
+          <span t-if="state.data.health.all_healthy">All Systems Operational</span>
+          <span t-else="">Issues: <t t-out="state.data.health.failing.join(', ')"/></span>
+        </div>
+        <div class="sod-statusmeta">
+          <span>Last updated: <t t-out="state.data.health.last_sync"/></span>
+          <button class="sod-ghostbtn" title="Refresh" t-on-click="() => this.refresh()">
+            <span class="sod-ic" t-out="icons.rotate"/>
+          </button>
+        </div>
+      </div>
+    </aside>
+
+    <!-- ===================== main ===================== -->
+    <main class="sod-main">
+
+      <div class="sod-pagehead" t-if="state.data">
+        <div>
+          <span class="sod-title">SHOPIFY OPS</span>
+          <span class="sod-titledot"></span>
+          <span class="sod-subtitle">OPERATIONS DASHBOARD</span>
+        </div>
+        <div class="sod-headmeta">
+          <span class="sod-dot" t-att-class="state.data.health.all_healthy ? 'sod-ok' : 'sod-fail'"></span>
+          <span t-if="state.data.health.all_healthy">All systems healthy</span>
+          <span t-else="">Attention needed</span>
+          <span class="sod-sep">|</span>
+          <span>Last sync: <t t-out="state.data.health.last_sync"/></span>
+        </div>
+      </div>
+
+      <!-- loading / error -->
+      <div t-if="state.loading" class="sod-loading">
+        <div class="sod-skelrow"><div class="sod-skel"></div><div class="sod-skel"></div><div class="sod-skel"></div><div class="sod-skel"></div><div class="sod-skel"></div></div>
+        <div class="sod-skel" style="width:100%;height:220px"></div>
+      </div>
+      <div t-if="!state.loading and state.error" class="sod-empty">
+        <p class="sod-empty-title">Dashboard data unavailable</p>
+        <p class="sod-empty-sub"><t t-out="state.error"/></p>
+      </div>
+
+      <t t-if="!state.loading and !state.error and state.data">
+      <t t-set="k" t-value="state.data.kpis"/>
+
+      <!-- KPI cards (clickable -> filtered views) -->
+      <section class="sod-kpis">
+        <a class="sod-card sod-kpi" t-att-href="kpiUrl('pulled')" target="_blank">
+          <div class="sod-kpi-icon sod-tint-purple"><span class="sod-ic" t-out="icons.database"/></div>
+          <div class="sod-kpi-lbl">Updates pulled · today</div>
+          <div class="sod-kpi-num" t-out="fmtInt(k.pulled_today)"/>
+          <div class="sod-kpi-delta" t-att-class="'sod-d-' + deltaDir(k.pulled_delta_pct, false)"
+               t-if="k.pulled_delta_pct !== null" t-out="deltaTxt(k.pulled_delta_pct, '%')"/>
+          <div class="sod-kpi-delta sod-d-flat" t-else=""><t t-out="k.pulled_week"/> this week</div>
+        </a>
+        <a class="sod-card sod-kpi" t-att-href="kpiUrl('logs')" target="_blank">
+          <div class="sod-kpi-icon sod-tint-green"><span class="sod-ic" t-out="icons.refresh"/></div>
+          <div class="sod-kpi-lbl">Sync success rate · 24h</div>
+          <div class="sod-kpi-num" t-out="fmtRate(k.success_rate)"/>
+          <div class="sod-kpi-delta" t-att-class="'sod-d-' + deltaDir(k.success_delta_pts, false)"
+               t-if="k.success_delta_pts !== null" t-out="deltaTxt(k.success_delta_pts, '%')"/>
+          <div class="sod-kpi-delta sod-d-flat" t-else=""><t t-out="k.success_done"/> / <t t-out="k.success_total"/> jobs</div>
+        </a>
+        <a class="sod-card sod-kpi" t-att-href="kpiUrl('queue')" target="_blank">
+          <div class="sod-kpi-icon sod-tint-blue"><span class="sod-ic" t-out="icons.shield"/></div>
+          <div class="sod-kpi-lbl">In queue</div>
+          <div class="sod-kpi-num" t-out="fmtInt(k.queue_count)"/>
+          <div class="sod-kpi-delta">
+            <span class="sod-link">View queue →</span>
+          </div>
+        </a>
+        <a class="sod-card sod-kpi" t-att-href="kpiUrl('failures')" target="_blank">
+          <div class="sod-kpi-icon sod-tint-orange"><span class="sod-ic" t-out="icons.alertTri"/></div>
+          <div class="sod-kpi-lbl">Failures · needs attention</div>
+          <div class="sod-kpi-num" t-att-class="k.failed_count > 0 ? 'sod-redtext' : ''" t-out="fmtInt(k.failed_count)"/>
+          <div class="sod-kpi-delta" t-att-class="'sod-d-' + deltaDir(k.failed_delta, true)"
+               t-if="k.failed_delta !== 0" t-out="deltaTxt(k.failed_delta, '')"/>
+          <div class="sod-kpi-delta sod-d-flat" t-else="" t-out="k.failed_latest_ref || 'all clear'"/>
+        </a>
+        <a class="sod-card sod-kpi" t-att-href="kpiUrl('jobs')" target="_blank">
+          <div class="sod-kpi-icon sod-tint-purple"><span class="sod-ic" t-out="icons.clock"/></div>
+          <div class="sod-kpi-lbl">Avg queue time</div>
+          <div class="sod-kpi-num" t-out="fmtAvg(k.avg_queue_seconds)"/>
+          <div class="sod-kpi-delta" t-att-class="'sod-d-' + deltaDir(k.avg_queue_delta_seconds, true)"
+               t-if="k.avg_queue_delta_seconds !== null" t-out="deltaTxt(k.avg_queue_delta_seconds, 's')"/>
+          <div class="sod-kpi-delta sod-d-flat" t-else="">no completed jobs yet</div>
+        </a>
+      </section>
+
+      <!-- engine health -->
+      <div class="sod-sechead">
+        <h2>Sync engine health</h2>
+        <span class="sod-seenote" t-out="state.data.engines.length + ' modules'"/>
+      </div>
+      <section class="sod-engines">
+        <a t-foreach="state.data.engines" t-as="eng" t-key="eng.key" class="sod-card sod-engine"
+           t-att-href="engineUrl(eng)" t-att-target="engineUrl(eng) ? '_blank' : false">
+          <div class="sod-eng-icon" t-att-class="'sod-tint-' + ({order_pull:'purple',order_edit:'orange',address:'teal',inventory:'blue',fulfillment:'green',customer:'teal',product:'orange',price:'purple',metafield:'magenta',discount_catalogue:'orange'}[eng.key] || 'purple')">
+            <span class="sod-ic" t-out="engineIcon(eng.key)"/>
+          </div>
+          <div>
+            <div class="sod-engname" t-out="eng.label"/>
+            <div class="sod-engmeta">
+              <span class="sod-dot" t-att-class="'sod-' + eng.status"></span>
+              <span t-out="eng.status === 'off' ? 'Disabled' : 'Last run: ' + eng.meta"/>
+            </div>
+          </div>
+        </a>
+      </section>
+
+      <!-- job queue -->
+      <section class="sod-card sod-queue">
+        <div class="sod-queuehead">
+          <h2>Orders – recent activity</h2>
+          <div class="sod-filters">
+            <select t-att-value="state.filterType" t-on-change="(ev) => this.state.filterType = ev.target.value">
+              <option value="">All types</option>
+              <option t-foreach="jobTypes" t-as="jt" t-key="jt" t-att-value="jt" t-out="jt"/>
+            </select>
+            <select t-att-value="state.filterState" t-on-change="(ev) => this.state.filterState = ev.target.value">
+              <option value="">All states</option>
+              <option value="done">done</option>
+              <option value="pending">pending</option>
+              <option value="processing">running</option>
+              <option value="failed">failed</option>
+            </select>
+            <input type="text" placeholder="Search order # / SKU" t-att-value="state.filterSearch" t-on-input="onFilterSearchInput"/>
+            <span class="sod-seenote">Showing <t t-out="jobs.length"/> / <t t-out="totalJobs"/></span>
+          </div>
+        </div>
+
+        <table class="sod-jobs" t-if="jobs.length">
+          <thead>
+            <tr><th class="sod-c-time">TIME</th><th>TYPE</th><th>ORDER / ITEM</th>
+                <th>STATUS</th><th>TRIES</th><th>DURATION</th><th class="sod-c-actions">ACTIONS</th></tr>
+          </thead>
+          <tbody>
+            <t t-foreach="jobs" t-as="job" t-key="job.id">
+              <tr class="sod-row" t-att-class="state.expandedJobId === job.id ? 'sod-expanded' : ''"
+                  t-on-click="() => this.toggleJob(job.id)">
+                <td class="sod-c-time" t-out="job.time"/>
+                <td class="sod-mono" t-out="job.type"/>
+                <td class="sod-ord" t-out="job.order_ref || job.name"/>
+                <td><span class="sod-pill" t-att-class="'sod-pill-' + pillClass(job.state)">
+                  <span class="sod-pilldot"></span><t t-out="statusLabel(job.state)"/></span></td>
+                <td class="sod-mono" t-out="job.attempts"/>
+                <td class="sod-mono sod-dim" t-out="job.duration || '—'"/>
+                <td class="sod-c-actions">
+                  <button class="sod-btn" t-att-class="job.state === 'failed' ? 'sod-btn-red' : 'sod-btn-plain'"
+                          t-att-disabled="state.retryingId === job.id"
+                          t-on-click="(ev) => this.retryJob(job, ev)">
+                    <span class="sod-ic" t-out="icons.rotate"/>
+                    <t t-out="state.retryingId === job.id ? 'Queuing…' : 'Retry now'"/>
+                  </button>
+                  <a class="sod-btn sod-btn-purple" t-att-href="jobUrl(job.id)" target="_blank" t-on-click="(ev) => ev.stopPropagation()">
+                    <span class="sod-ic" t-out="icons.fileText"/>View in logs
+                  </a>
+                  <span class="sod-menuwrap">
+                    <button class="sod-btn sod-btn-ghost" t-on-click="(ev) => this.toggleMenu(job.id, ev)">
+                      <span class="sod-ic" t-out="icons.more"/>
+                    </button>
+                    <div class="sod-menu" t-if="state.menuJobId === job.id" t-on-click="(ev) => ev.stopPropagation()">
+                      <a t-att-href="jobUrl(job.id)" target="_blank">Open job</a>
+                      <a t-att-href="logsUrl()" target="_blank">View in logs</a>
+                      <button t-on-click="(ev) => this.menuRetry(job, ev)">Retry now</button>
+                      <button t-if="job.state !== 'processing'" class="sod-menu-danger"
+                              t-on-click="(ev) => this.clearJob(job, ev)">Clear job</button>
+                    </div>
+                  </span>
+                </td>
+              </tr>
+              <tr class="sod-detailrow" t-if="state.expandedJobId === job.id">
+                <td colspan="7">
+                  <div class="sod-detailbox sod-open">
+                    <div class="sod-payhead">
+                      <span class="sod-lbl" t-out="job.state === 'failed' ? 'ERROR DETAIL' : 'PAYLOAD'"/>
+                      <button class="sod-ghostbtn" title="Copy"
+                              t-on-click="(ev) => this.copyPayload(job, ev)">
+                        <span class="sod-ic" t-out="state.copiedId === job.id ? icons.check : icons.copy"/>
+                      </button>
+                    </div>
+                    <pre class="sod-payload" t-att-class="job.state === 'failed' ? 'sod-err' : ''"
+                         t-out="job.state === 'failed' and job.error ? job.error : (job.payload_preview || '(no payload)')"/>
+                    <pre class="sod-payload sod-err" style="margin-top:8px"
+                         t-if="job.state !== 'failed' and job.error" t-out="job.error"/>
+                  </div>
+                </td>
+              </tr>
+            </t>
+          </tbody>
+        </table>
+        <div t-else="" class="sod-empty sod-empty-in">
+          <p class="sod-empty-title">No jobs match these filters</p>
+          <p class="sod-empty-sub">adjust type / state / search to widen the result</p>
+        </div>
+        <div class="sod-loadmore" t-if="canLoadMoreJobs">
+          <button class="sod-btn sod-btn-purple" t-att-disabled="state.loadingMore"
+                  t-on-click="(ev) => this.loadMoreJobs(ev)">
+            <t t-out="state.loadingMore ? 'Loading…' : 'Load more'"/>
+          </button>
+          <span class="sod-seenote">
+            <t t-out="(state.data.jobs || []).length"/> of <t t-out="totalJobs"/> loaded
+          </span>
+        </div>
+      </section>
+
+      <!-- products -->
+      <section class="sod-card sod-queue" t-if="state.data.products and state.data.products.length">
+        <div class="sod-queuehead">
+          <h2>Products – sync status</h2>
+          <span class="sod-seenote">Showing <t t-out="state.data.products.length"/> (SKU'd, sellable)</span>
+        </div>
+        <table class="sod-jobs">
+          <thead>
+            <tr><th>PRODUCT</th><th>SKU</th><th>SHOPIFY</th><th>PRICE</th><th>PUSHED</th><th>STOCK (odoo/pushed)</th><th class="sod-c-actions">ACTIONS</th></tr>
+          </thead>
+          <tbody>
+            <t t-foreach="state.data.products" t-as="p" t-key="p.id">
+              <tr>
+                <td class="sod-ord" t-out="p.name"/>
+                <td class="sod-mono" t-out="p.sku"/>
+                <td><span class="sod-pill" t-att-class="p.linked ? 'sod-pill-done' : 'sod-pill-pending'">
+                  <span class="sod-pilldot"></span><t t-out="p.linked ? 'LINKED' : 'NOT LINKED'"/></span></td>
+                <td class="sod-mono" t-out="p.price.toFixed(2)"/>
+                <td class="sod-mono sod-dim" t-out="p.price_pushed ? p.price_pushed.toFixed(2) : '—'"/>
+                <td class="sod-mono sod-dim"><t t-out="p.qty"/> / <t t-out="p.qty_pushed"/></td>
+                <td class="sod-c-actions">
+                  <button class="sod-btn sod-btn-purple"
+                          t-att-disabled="state.pushingProductId === p.id"
+                          t-on-click="(ev) => this.pushProduct(p, ev)">
+                    <span class="sod-ic" t-out="icons.refresh"/>
+                    <t t-out="state.pushingProductId === p.id ? 'Pushing…' : 'Push now'"/>
+                  </button>
+                  <a class="sod-btn sod-btn-plain" t-att-href="productUrl(p.id)" target="_blank">
+                    <span class="sod-ic" t-out="icons.fileText"/>Open
+                  </a>
+                </td>
+              </tr>
+            </t>
+          </tbody>
+        </table>
+      </section>
+
+      <!-- bottom: webhooks + events -->
+      <section class="sod-bottom">
+        <div class="sod-card sod-panel">
+          <div class="sod-sechead sod-panelhead">
+            <h2>Webhook status</h2>
+            <span class="sod-seenote">/shopify_order_ops/webhook/orders-edited</span>
+          </div>
+          <div t-foreach="state.data.webhooks" t-as="hook" t-key="hook.topic" class="sod-hook">
+            <span class="sod-mono" t-out="hook.topic"/>
+            <span class="sod-dim" t-if="hook.active">last <t t-out="rel(hook.last_received_seconds)"/> ago</span>
+            <span class="sod-dim" t-else="">never received</span>
+            <span class="sod-pill sod-pill-done" t-if="hook.active"><span class="sod-pilldot"></span>ACTIVE</span>
+            <span class="sod-pill sod-pill-pending" t-else=""><span class="sod-pilldot"></span>WAITING</span>
+          </div>
+        </div>
+        <div class="sod-card sod-panel">
+          <div class="sod-sechead sod-panelhead">
+            <h2>Latest events</h2><span class="sod-seenote">live</span>
+          </div>
+          <div t-foreach="state.data.events" t-as="ev" t-key="ev_index"
+               t-att-class="ev.level === 'error' ? 'sod-logline sod-errline' : (ev.level === 'warning' ? 'sod-logline sod-warnline' : 'sod-logline')">
+            <span class="sod-logtime" t-out="ev.time"/>
+            <span><t t-out="ev.message"/></span>
+          </div>
+          <div class="sod-dim" style="padding:8px 0" t-if="!state.data.events.length">no events yet</div>
+        </div>
+      </section>
+      </t>
+    </main>
+  </div>
+</div>
+</t>
+</templates>

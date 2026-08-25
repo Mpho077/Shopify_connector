@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <record id="shopify_location_map_list" model="ir.ui.view">
+        <field name="name">shopify.location.map.list</field>
+        <field name="model">shopify.location.map</field>
+        <field name="arch" type="xml">
+            <list>
+                <field name="shopify_location_name"/>
+                <field name="shopify_location_id"/>
+                <field name="odoo_location_id"/>
+                <field name="active" widget="boolean_toggle"/>
+            </list>
+        </field>
+    </record>
+    <record id="shopify_location_map_form" model="ir.ui.view">
+        <field name="name">shopify.location.map.form</field>
+        <field name="model">shopify.location.map</field>
+        <field name="arch" type="xml">
+            <form>
+                <sheet>
+                    <group>
+                        <field name="shopify_location_name"/>
+                        <field name="shopify_location_id"/>
+                        <field name="odoo_location_id"/>
+                        <field name="active"/>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+    <record id="action_shopify_location_map" model="ir.actions.act_window">
+        <field name="name">Location Mappings</field>
+        <field name="res_model">shopify.location.map</field>
+        <field name="view_mode">list,form</field>
+    </record>
+</odoo>

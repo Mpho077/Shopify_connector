@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <record id="shopify_metafield_map_list" model="ir.ui.view">
+        <field name="name">shopify.metafield.map.list</field>
+        <field name="model">shopify.metafield.map</field>
+        <field name="arch" type="xml">
+            <list>
+                <field name="name"/>
+                <field name="applies_to"/>
+                <field name="direction"/>
+                <field name="shopify_namespace"/>
+                <field name="shopify_key"/>
+                <field name="odoo_field"/>
+                <field name="active" widget="boolean_toggle"/>
+            </list>
+        </field>
+    </record>
+    <record id="shopify_metafield_map_form" model="ir.ui.view">
+        <field name="name">shopify.metafield.map.form</field>
+        <field name="model">shopify.metafield.map</field>
+        <field name="arch" type="xml">
+            <form>
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="applies_to"/>
+                            <field name="direction"/>
+                            <field name="active"/>
+                        </group>
+                        <group>
+                            <field name="shopify_namespace"/>
+                            <field name="shopify_key"/>
+                            <field name="shopify_type"/>
+                        </group>
+                    </group>
+                    <group>
+                        <group>
+                            <field name="odoo_model"/>
+                            <field name="odoo_field"/>
+                        </group>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+    <record id="action_shopify_metafield_map" model="ir.actions.act_window">
+        <field name="name">Metafield Mappings</field>
+        <field name="res_model">shopify.metafield.map</field>
+        <field name="view_mode">list,form</field>
+    </record>
+</odoo>

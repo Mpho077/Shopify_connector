@@ -1,0 +1,336 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <record id="res_config_settings_view_form_inherit_shopify_ops" model="ir.ui.view">
+        <field name="name">res.config.settings.view.form.inherit.shopify.ops</field>
+        <field name="model">res.config.settings</field>
+        <field name="inherit_id" ref="base.res_config_settings_view_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//form" position="inside">
+                <app data-string="Shopify Ops" string="Shopify Ops" name="shopify_order_ops">
+
+                    <block title="Shopify Connection" name="shopify_ops_connection_container">
+                        <setting string="Store Credentials" help="Admin API access token for your Shopify custom app">
+                            <div class="content-group">
+                                <div class="mt8">
+                                    <label for="shopify_shop_domain" class="o_light_label"/>
+                                    <div><field name="shopify_shop_domain" style="max-width:420px;width:100%" placeholder="my-store.myshopify.com"/></div>
+                                </div>
+                                <div class="mt8">
+                                    <label for="shopify_access_token" class="o_light_label"/>
+                                    <div><field name="shopify_access_token" password="True" style="max-width:420px;width:100%"/></div>
+                                </div>
+                                <div class="mt8">
+                                    <label for="shopify_webhook_secret" class="o_light_label"/>
+                                    <div><field name="shopify_webhook_secret" password="True" style="max-width:420px;width:100%"/></div>
+                                </div>
+                            </div>
+                        </setting>
+                        <setting string="Webhooks" help="Subscribe Shopify to this Odoo instance (orders + cancellations + refunds)">
+                            <div class="content-group">
+                                <div class="mt8">
+                                    <button name="action_register_shopify_webhooks" string="Register Shopify webhooks" type="object" class="btn-link" icon="fa-plug"/>
+                                </div>
+                                <div class="mt8">
+                                    <button name="action_list_shopify_webhooks" string="List webhooks for this token" type="object" class="btn-link" icon="fa-list"/>
+                                </div>
+                                <div class="mt8">
+                                    <button name="action_replace_shopify_webhooks" string="Replace webhooks for this Odoo" type="object" class="btn-link" icon="fa-refresh"/>
+                                </div>
+                            </div>
+                        </setting>
+                        <setting string="Sync from" help="Only records changed after this time are synced. Records already linked to Shopify always keep syncing.">
+                            <div class="content-group">
+                                <div class="mt8">
+                                    <field name="shopify_sync_from" style="max-width:320px;width:100%" placeholder="2026-08-13T12:00:00"/>
+                                </div>
+                                <div class="mt8">
+                                    <button name="action_set_sync_from_now" string="Start syncing from now" type="object" class="btn-link" icon="fa-clock-o"/>
+                                </div>
+                            </div>
+                        </setting>
+                    </block>
+
+                    <block title="Matching &amp; Payments" name="shopify_ops_matching_container">
+                        <setting string="Order Match Field" help="How Shopify orders map to Odoo sale orders">
+                            <field name="shopify_order_match_field" style="max-width:420px;width:100%"/>
+                        </setting>
+                        <setting string="Extra Payment Journal" help="Journal used when registering payments for paid orders">
+                            <field name="shopify_payment_journal_id" style="max-width:420px;width:100%"/>
+                        </setting>
+                        <setting string="Auto re-mark invoice paid" help="After adding lines, re-apply payments when the Shopify order is fully paid">
+                            <field name="shopify_auto_mark_paid"/>
+                        </setting>
+                        <setting string="Map payment gateways to journals" help="Each Shopify gateway registers against a journal 'Card (Gateway)'; created automatically if missing">
+                            <field name="shopify_map_payment_gateways"/>
+                        </setting>
+                    </block>
+
+                    <block title="Order Pull" name="shopify_ops_order_pull_container">
+                        <setting string="Only pull / update orders created after" help="Shopify orders created before this date and time are ignored — no pull, no shipping/discount lines, no address/tag/order-edit updates. This is the cutoff for old orders.">
+                            <div class="content-group">
+                                <div class="mt8">
+                                    <label for="shopify_order_sync_after" class="o_light_label"/>
+                                    <div><field name="shopify_order_sync_after" widget="datetime" style="max-width:320px;width:100%"/></div>
+                                </div>
+                                <div class="mt8">
+                                    <button name="action_set_order_sync_after_now" string="Use now" type="object" class="btn-link" icon="fa-clock-o"/>
+                                </div>
+                            </div>
+                        </setting>
+                        <setting string="Order Pull" help="Pull new Shopify orders into Odoo as confirmed sale orders via the orders/create webhook">
+                            <field name="shopify_order_pull_enabled"/>
+                        </setting>
+                        <setting string="Create + post invoice on pull" help="Orders arrive invoiced, not just as sale orders" invisible="not shopify_order_pull_enabled">
+                            <field name="shopify_order_pull_invoice"/>
+                        </setting>
+                        <setting string="Register payment when Shopify order is paid" help="Invoice lands as Paid, using the payment journal configured above" invisible="not shopify_order_pull_enabled">
+                            <field name="shopify_order_pull_auto_paid"/>
+                        </setting>
+                        <setting string="Sync order discounts" help="Percentage coupons land as Disc.% on the product line. Cart-wide fixed-amount codes use a dedicated SHOPIFY-DISCOUNT line. Typing Disc.% in Odoo does not push to Shopify. Posted invoices are reset and re-posted like order-edit.">
+                            <field name="shopify_discount_sync_enabled"/>
+                        </setting>
+                        <setting string="Sync Shopify discount catalogue" help="Shopify → Odoo only. Pulls automatic sales and codes (15% off order, dates, minimums, combinations) into Shopify Ops → Discounts. Token needs read_discounts.">
+                            <field name="shopify_discount_catalogue_sync_enabled"/>
+                        </setting>
+                        <setting string="Apply catalogue discounts on manual orders" help="Active automatic Shopify sales (e.g. Afterpay Day 15%) apply as Disc.% on quotations created in Odoo. Enter a Shopify code on Other Info for code discounts." invisible="not shopify_discount_catalogue_sync_enabled">
+                            <field name="shopify_discount_apply_manual_orders"/>
+                        </setting>
+                        <setting string="Manual catalogue sync" invisible="not shopify_discount_catalogue_sync_enabled">
+                            <button name="action_manual_discount_catalogue_sync" string="Pull discounts from Shopify" type="object" class="btn-link" icon="fa-refresh"/>
+                        </setting>
+                        <setting string="Sync shipping charges" help="Copy Shopify shipping onto a dedicated Odoo sale line (Shopify → Odoo). Uses the amount the customer paid after any shipping discounts.">
+                            <field name="shopify_shipping_charge_sync_enabled"/>
+                        </setting>
+                        <setting string="Historical Import" help="Enqueue pull jobs for orders created since this date and time (saved; runs in the background queue). Never goes earlier than Only pull / update orders created after.">
+                            <div class="content-group">
+                                <div class="mt8">
+                                    <label for="shopify_order_import_since" class="o_light_label"/>
+                                    <div><field name="shopify_order_import_since" widget="datetime" style="max-width:320px;width:100%"/></div>
+                                </div>
+                                <div class="mt8">
+                                    <button name="action_import_historical_orders" string="Import historical orders" type="object" class="btn-link" icon="fa-download"/>
+                                </div>
+                            </div>
+                        </setting>
+                    </block>
+
+                    <block title="Order Numbering" name="shopify_ops_numbering_container">
+                        <setting string="Use Shopify order numbers in Odoo" help="Shopify orders like #1011 become Odoo sale orders named #1011">
+                            <field name="shopify_use_shopify_order_numbers"/>
+                        </setting>
+                        <setting string="Order prefix" help="Prefix applied to the Shopify order number (e.g. '#' or 'WEB-'). Leave blank for Odoo default numbering. New records only.">
+                            <field name="shopify_order_prefix" style="max-width:240px;width:100%" placeholder="#"/>
+                        </setting>
+                    </block>
+
+                    <block title="Order Filters" name="shopify_ops_filters_container">
+                        <setting string="Payment statuses" help="Comma-separated Shopify financial statuses to pull">
+                            <field name="shopify_order_payment_status_filter" style="max-width:420px;width:100%" placeholder="paid,partially_paid"/>
+                        </setting>
+                        <setting string="Fulfillment statuses" help="Comma-separated fulfillment statuses to pull. Empty = all">
+                            <field name="shopify_order_fulfillment_status_filter" style="max-width:420px;width:100%"/>
+                        </setting>
+                        <setting string="Order sources" help="Comma-separated sources to pull (web, pos, draft_order, iphone, android...). Empty = all">
+                            <field name="shopify_order_source_filter" style="max-width:420px;width:100%"/>
+                        </setting>
+                        <setting string="Only sync within a date range" help="Orders created outside the range are skipped">
+                            <field name="shopify_order_date_range_enabled"/>
+                        </setting>
+                        <setting string="Date range" invisible="not shopify_order_date_range_enabled">
+                            <div class="content-group">
+                                <div class="mt8">
+                                    <label for="shopify_order_sync_date_from" class="o_light_label"/>
+                                    <div><field name="shopify_order_sync_date_from" style="max-width:240px;width:100%" placeholder="2026-08-01"/></div>
+                                </div>
+                                <div class="mt8">
+                                    <label for="shopify_order_sync_date_to" class="o_light_label"/>
+                                    <div><field name="shopify_order_sync_date_to" style="max-width:240px;width:100%" placeholder="2026-08-31"/></div>
+                                </div>
+                            </div>
+                        </setting>
+                        <setting string="Include order note" help="Shopify order note lands on the Odoo sale order">
+                            <field name="shopify_include_order_note"/>
+                        </setting>
+                        <setting string="Include order tags" help="Shopify order tags land on the sale order Tags field">
+                            <field name="shopify_include_order_tags"/>
+                        </setting>
+                    </block>
+
+                    <block title="Customer Mapping on Orders" name="shopify_ops_single_customer_container">
+                        <setting string="Map orders to a single Odoo customer" help="Selected orders are linked to one Odoo customer instead of per-order customers">
+                            <field name="shopify_single_customer_mode"/>
+                        </setting>
+                        <setting string="Apply to" invisible="not shopify_single_customer_mode">
+                            <field name="shopify_single_customer_scope" widget="radio"/>
+                        </setting>
+                        <setting string="Single customer email" help="Orders link to the partner with this email" invisible="not shopify_single_customer_mode">
+                            <field name="shopify_single_customer_email" style="max-width:420px;width:100%"/>
+                        </setting>
+                    </block>
+
+                    <block title="Cancellation &amp; Refunds" name="shopify_ops_cancel_container">
+                        <setting string="Order edit sync" help="When off, orders/edited webhooks are acknowledged but no sale orders or invoices are touched">
+                            <field name="shopify_order_edit_enabled"/>
+                        </setting>
+                        <setting string="Cancel in Odoo when cancelled in Shopify" help="Shopify → Odoo. Cancelling an order in Shopify cancels the linked sale order in Odoo.">
+                            <field name="shopify_cancel_shopify_to_odoo_enabled"/>
+                        </setting>
+                        <setting string="Cancel in Shopify when cancelled in Odoo" help="Odoo → Shopify. Leave off if warehouse-change automations cancel and reconfirm in Odoo.">
+                            <field name="shopify_cancel_odoo_to_shopify_enabled"/>
+                        </setting>
+                        <setting string="Push order line additions to Shopify" help="Adding a product line on a Shopify-linked sale order in Odoo adds it to the Shopify order (GraphQL order editing; payment collection for the added amount happens in Shopify)">
+                            <field name="shopify_order_update_push_enabled"/>
+                        </setting>
+                        <setting string="Sync refunds" help="Shopify refunds create Odoo credit notes and restock delivered goods">
+                            <field name="shopify_refund_sync_enabled"/>
+                        </setting>
+                    </block>
+
+                    <block title="Stock Sync" name="shopify_ops_stock_container">
+                        <setting string="Inventory Push" help="Master switch for pushing Odoo stock levels to Shopify">
+                            <field name="shopify_inventory_sync_enabled"/>
+                        </setting>
+                        <setting string="How should inventory sync" invisible="not shopify_inventory_sync_enabled">
+                            <field name="shopify_inventory_mode" widget="radio"/>
+                        </setting>
+                        <setting string="Which Odoo quantity to push" invisible="not shopify_inventory_sync_enabled">
+                            <field name="shopify_stock_quantity_mode" widget="radio"/>
+                        </setting>
+                        <setting string="Sync only in-stock products" help="Products with zero or negative stock are skipped" invisible="not shopify_inventory_sync_enabled">
+                            <field name="shopify_stock_sync_only_instock"/>
+                        </setting>
+                        <setting string="Default Shopify Location ID" help="Numeric Shopify location used when no location mapping matches (see Shopify Ops > Location Mappings)">
+                            <field name="shopify_location_id" style="max-width:240px;width:100%"/>
+                        </setting>
+                        <setting string="Manual Sync" help="Push all current Odoo inventory levels to Shopify now">
+                            <button name="action_manual_inventory_sync" string="Sync Inventory" type="object" class="btn-link" icon="fa-refresh"/>
+                        </setting>
+                    </block>
+
+                    <block title="Fulfillment Sync" name="shopify_ops_fulfillment_container">
+                        <setting string="Fulfillment sync" help="Keep delivery status and tracking aligned between Odoo and Shopify">
+                            <field name="shopify_fulfillment_sync_enabled"/>
+                        </setting>
+                        <setting string="Sync direction" invisible="not shopify_fulfillment_sync_enabled">
+                            <field name="shopify_fulfillment_sync_direction" widget="radio"/>
+                        </setting>
+                        <setting string="Email customer on fulfillment" help="When pushing Odoo -> Shopify, Shopify emails the customer its shipping confirmation (with tracking). Default off." invisible="not shopify_fulfillment_sync_enabled">
+                            <field name="shopify_fulfillment_notify_customer"/>
+                        </setting>
+                    </block>
+
+                    <block title="Product Settings" name="shopify_ops_product_container">
+                        <setting string="Product Sync" help="Keep the product catalog aligned between Odoo and Shopify">
+                            <field name="shopify_product_sync_enabled"/>
+                        </setting>
+                        <setting string="Sync direction" invisible="not shopify_product_sync_enabled">
+                            <field name="shopify_product_sync_direction" widget="radio"/>
+                        </setting>
+                        <setting string="Create mode" invisible="not shopify_product_sync_enabled">
+                            <field name="shopify_product_create_mode" widget="radio"/>
+                        </setting>
+                        <setting string="Auto-publish new synced products" invisible="not shopify_product_sync_enabled">
+                            <field name="shopify_product_auto_publish"/>
+                        </setting>
+                        <setting string="Sync only products with available stock in Odoo" invisible="not shopify_product_sync_enabled">
+                            <field name="shopify_product_sync_only_instock"/>
+                        </setting>
+                        <setting string="Create Shopify collections from Odoo categories" invisible="not shopify_product_sync_enabled">
+                            <field name="shopify_product_collections_from_categories"/>
+                        </setting>
+                        <setting string="Only sync these Odoo categories" help="Comma-separated category names. Empty = all" invisible="not shopify_product_sync_enabled">
+                            <field name="shopify_product_sync_categories" style="max-width:420px;width:100%"/>
+                        </setting>
+                        <setting string="Only sync products with these tags" help="Comma-separated tag names. Empty = all" invisible="not shopify_product_sync_enabled">
+                            <field name="shopify_product_sync_tags" style="max-width:420px;width:100%"/>
+                        </setting>
+                        <setting string="Send tax-included prices to Shopify" invisible="not shopify_product_sync_enabled">
+                            <field name="shopify_product_price_tax_included"/>
+                        </setting>
+                        <setting string="Sell out of stock (continue selling)" invisible="not shopify_product_sync_enabled">
+                            <field name="shopify_product_sell_out_of_stock"/>
+                        </setting>
+                        <setting string="Shopify price from Odoo pricelist" invisible="not shopify_product_sync_enabled">
+                            <field name="shopify_price_from_pricelist"/>
+                        </setting>
+                        <setting string="Pricelist" invisible="not shopify_price_from_pricelist or not shopify_product_sync_enabled">
+                            <field name="shopify_pricelist_id" style="max-width:420px;width:100%"/>
+                        </setting>
+                        <setting string="Import products updated since" help="Rewinds the watermark to this date/time and syncs in batches of 250. Further batches continue automatically until the window is done." invisible="not shopify_product_sync_enabled">
+                            <div class="content-group">
+                                <div class="mt8">
+                                    <label for="shopify_product_import_since" class="o_light_label"/>
+                                    <div><field name="shopify_product_import_since" widget="datetime" style="max-width:320px;width:100%"/></div>
+                                </div>
+                                <div class="mt8">
+                                    <button name="action_import_products_since" string="Import products since" type="object" class="btn-link" icon="fa-download"/>
+                                </div>
+                            </div>
+                        </setting>
+                        <setting string="Manual Sync" help="Sync products with the current settings now">
+                            <button name="action_manual_product_sync" string="Manual Product Sync" type="object" class="btn-link" icon="fa-refresh"/>
+                        </setting>
+                    </block>
+
+                    <block title="Price Sync" name="shopify_ops_price_container">
+                        <setting string="Price Sync" help="Keep variant prices aligned between Odoo and Shopify (hourly)">
+                            <field name="shopify_price_sync_enabled"/>
+                        </setting>
+                        <setting string="Price sync direction" invisible="not shopify_price_sync_enabled">
+                            <field name="shopify_price_sync_direction" widget="radio"/>
+                        </setting>
+                        <setting string="Sync compare-at (RRP)" help="Keeps the Shopify compare-at price in sync in the same direction as the price sync" invisible="not shopify_price_sync_enabled">
+                            <field name="shopify_compare_at_sync_enabled"/>
+                        </setting>
+                    </block>
+
+                    <block title="Customer Sync" name="shopify_ops_customer_container">
+                        <setting string="Customer Sync" help="Sync customers between Shopify and Odoo contacts (hourly, incremental)">
+                            <field name="shopify_customer_sync_enabled"/>
+                        </setting>
+                        <setting string="Sync direction" invisible="not shopify_customer_sync_enabled">
+                            <field name="shopify_customer_sync_direction" widget="radio"/>
+                        </setting>
+                        <setting string="Create customers in Odoo as" invisible="not shopify_customer_sync_enabled">
+                            <field name="shopify_customer_create_as" widget="radio"/>
+                        </setting>
+                        <setting string="B2B sync" help="Companies, locations, contacts, pricelists and payment terms" invisible="not shopify_customer_sync_enabled">
+                            <field name="shopify_customer_b2b_sync"/>
+                        </setting>
+                        <setting string="Minimum orders filter" help="Only sync customers with at least this many orders" invisible="not shopify_customer_sync_enabled">
+                            <div class="content-group">
+                                <div class="mt8"><field name="shopify_customer_min_orders_enabled"/></div>
+                                <div class="mt8" invisible="not shopify_customer_min_orders_enabled">
+                                    <label for="shopify_customer_min_orders" class="o_light_label"/>
+                                    <div><field name="shopify_customer_min_orders" style="max-width:160px;width:100%"/></div>
+                                </div>
+                            </div>
+                        </setting>
+                        <setting string="B2B customers only" help="Only customers associated with a company are synced" invisible="not shopify_customer_sync_enabled">
+                            <field name="shopify_customer_b2b_only"/>
+                        </setting>
+                        <setting string="Only sync customers with these tags" help="Comma-separated tag names. Empty = all" invisible="not shopify_customer_sync_enabled">
+                            <field name="shopify_customer_sync_tags" style="max-width:420px;width:100%"/>
+                        </setting>
+                    </block>
+
+                    <block title="Order Address Sync" name="shopify_ops_address_sync_container">
+                        <setting string="Order address sync" help="Shipping: Shopify order shipping ↔ Odoo delivery address. Billing: Shopify → sale order Invoice Address only (Shopify cannot update billing on an existing order). Does not change the customer form.">
+                            <field name="shopify_address_propagation_enabled"/>
+                        </setting>
+                        <setting string="Sync direction" invisible="not shopify_address_propagation_enabled">
+                            <field name="shopify_address_sync_direction" widget="radio"/>
+                        </setting>
+                    </block>
+
+                    <block title="Metafield Sync" name="shopify_ops_metafield_container">
+                        <setting string="Metafield Sync" help="Apply the rules from Shopify Ops, Metafield Mappings (every 2 h)">
+                            <field name="shopify_metafield_sync_enabled"/>
+                        </setting>
+                    </block>
+
+                </app>
+            </xpath>
+        </field>
+    </record>
+</odoo>

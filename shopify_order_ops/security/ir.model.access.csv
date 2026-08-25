@@ -1,0 +1,11 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_shopify_sync_job_user,shopify.sync.job user,model_shopify_sync_job,base.group_user,1,0,0,0
+access_shopify_sync_job_manager,shopify.sync.job manager,model_shopify_sync_job,sales_team.group_sale_manager,1,1,1,1
+access_shopify_sync_log_user,shopify.sync.log user,model_shopify_sync_log,base.group_user,1,0,0,0
+access_shopify_sync_log_manager,shopify.sync.log manager,model_shopify_sync_log,sales_team.group_sale_manager,1,1,1,1
+access_shopify_metafield_map_user,shopify.metafield.map user,model_shopify_metafield_map,base.group_user,1,0,0,0
+access_shopify_metafield_map_manager,shopify.metafield.map manager,model_shopify_metafield_map,sales_team.group_sale_manager,1,1,1,1
+access_shopify_location_map_user,shopify.location.map user,model_shopify_location_map,base.group_user,1,0,0,0
+access_shopify_location_map_manager,shopify.location.map manager,model_shopify_location_map,sales_team.group_sale_manager,1,1,1,1
+access_shopify_discount_user,shopify.discount user,model_shopify_discount,base.group_user,1,0,0,0
+access_shopify_discount_manager,shopify.discount manager,model_shopify_discount,sales_team.group_sale_manager,1,1,1,1

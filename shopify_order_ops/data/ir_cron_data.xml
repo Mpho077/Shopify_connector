@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo noupdate="1">
+    <record id="ir_cron_process_jobs" model="ir.cron">
+        <field name="name">Shopify Ops: process queued jobs</field>
+        <field name="model_id" ref="model_shopify_sync_job"/>
+        <field name="state">code</field>
+        <field name="code">model._cron_process_jobs()</field>
+        <field name="interval_number">2</field>
+        <field name="interval_type">minutes</field>
+        <field name="user_id" ref="base.user_root"/>
+    </record>
+    <record id="ir_cron_inventory_push" model="ir.cron">
+        <field name="name">Shopify Ops: push inventory levels</field>
+        <field name="model_id" ref="model_shopify_inventory_sync"/>
+        <field name="state">code</field>
+        <field name="code">model.cron_push_inventory()</field>
+        <field name="interval_number">30</field>
+        <field name="interval_type">minutes</field>
+        <field name="user_id" ref="base.user_root"/>
+    </record>
+    <record id="ir_cron_inventory_dirty_push" model="ir.cron">
+        <field name="name">Shopify Ops: push changed inventory (real-time mode)</field>
+        <field name="model_id" ref="model_shopify_inventory_sync"/>
+        <field name="state">code</field>
+        <field name="code">model.cron_push_inventory_dirty()</field>
+        <field name="interval_number">5</field>
+        <field name="interval_type">minutes</field>
+        <field name="user_id" ref="base.user_root"/>
+    </record>
+    <record id="ir_cron_fulfillment_push" model="ir.cron">
+        <field name="name">Shopify Ops: sync fulfillments</field>
+        <field name="model_id" ref="model_shopify_fulfillment_sync"/>
+        <field name="state">code</field>
+        <field name="code">model.cron_push_fulfillments()</field>
+        <field name="interval_number">15</field>
+        <field name="interval_type">minutes</field>
+        <field name="user_id" ref="base.user_root"/>
+    </record>
+    <record id="ir_cron_customer_sync" model="ir.cron">
+        <field name="name">Shopify Ops: sync customers</field>
+        <field name="model_id" ref="model_shopify_customer_sync"/>
+        <field name="state">code</field>
+        <field name="code">model.cron_sync_customers()</field>
+        <field name="interval_number">60</field>
+        <field name="interval_type">minutes</field>
+        <field name="user_id" ref="base.user_root"/>
+    </record>
+    <record id="ir_cron_product_sync" model="ir.cron">
+        <field name="name">Shopify Ops: sync products</field>
+        <field name="model_id" ref="model_shopify_product_sync"/>
+        <field name="state">code</field>
+        <field name="code">model.cron_sync_products()</field>
+        <field name="interval_number">120</field>
+        <field name="interval_type">minutes</field>
+        <field name="user_id" ref="base.user_root"/>
+    </record>
+    <record id="ir_cron_price_sync" model="ir.cron">
+        <field name="name">Shopify Ops: sync prices</field>
+        <field name="model_id" ref="model_shopify_price_sync"/>
+        <field name="state">code</field>
+        <field name="code">model.cron_sync_prices()</field>
+        <field name="interval_number">60</field>
+        <field name="interval_type">minutes</field>
+        <field name="user_id" ref="base.user_root"/>
+    </record>
+    <record id="ir_cron_discount_catalogue" model="ir.cron">
+        <field name="name">Shopify Ops: sync discount catalogue</field>
+        <field name="model_id" ref="model_shopify_discount_catalogue_sync"/>
+        <field name="state">code</field>
+        <field name="code">model.cron_sync_discounts()</field>
+        <field name="interval_number">60</field>
+        <field name="interval_type">minutes</field>
+        <field name="user_id" ref="base.user_root"/>
+    </record>
+    <record id="ir_cron_metafield_sync" model="ir.cron">
+        <field name="name">Shopify Ops: sync metafields</field>
+        <field name="model_id" ref="model_shopify_metafield_sync"/>
+        <field name="state">code</field>
+        <field name="code">model.cron_sync_metafields()</field>
+        <field name="interval_number">120</field>
+        <field name="interval_type">minutes</field>
+        <field name="user_id" ref="base.user_root"/>
+    </record>
+</odoo>

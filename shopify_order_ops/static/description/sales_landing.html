@@ -1,0 +1,582 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <title>Shopify Ops — Odoo ↔ Shopify Command Center</title>
+  <meta name="description" content="Shopify Ops: two-way Odoo–Shopify sync with a modern ops dashboard, free 24/7 WhatsApp support, and free Odoo version upgrades. $550 one-time."/>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=Outfit:wght@400;500;600;700&display=swap" rel="stylesheet"/>
+  <style>
+    :root {
+      --bg: #07060c;
+      --bg-2: #100e18;
+      --surface: #16131f;
+      --line: rgba(168, 85, 247, 0.22);
+      --text: #f4f0ff;
+      --muted: #a89bc0;
+      --violet: #a855f7;
+      --violet-hot: #c084fc;
+      --cyan: #38bdf8;
+      --ok: #34d399;
+      --warn: #fb7185;
+      --price: #fbbf24;
+      --radius: 18px;
+      --font-display: "Syne", system-ui, sans-serif;
+      --font-body: "Outfit", system-ui, sans-serif;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: var(--font-body);
+      color: var(--text);
+      background:
+        radial-gradient(1200px 600px at 80% -10%, rgba(168, 85, 247, 0.28), transparent 55%),
+        radial-gradient(900px 500px at -10% 20%, rgba(56, 189, 248, 0.12), transparent 50%),
+        linear-gradient(180deg, var(--bg) 0%, var(--bg-2) 40%, #0a0810 100%);
+      line-height: 1.55;
+      -webkit-font-smoothing: antialiased;
+    }
+    img { max-width: 100%; display: block; }
+    a { color: inherit; text-decoration: none; }
+    .wrap { width: min(1120px, calc(100% - 2rem)); margin: 0 auto; }
+
+    .buybar {
+      position: sticky; top: 0; z-index: 50;
+      backdrop-filter: blur(14px);
+      background: rgba(7, 6, 12, 0.78);
+      border-bottom: 1px solid var(--line);
+    }
+    .buybar-inner {
+      display: flex; align-items: center; justify-content: space-between;
+      gap: 1rem; padding: 0.75rem 0;
+    }
+    .brand-mark {
+      display: flex; align-items: center; gap: 0.65rem;
+      font-family: var(--font-display); font-weight: 800; letter-spacing: 0.02em;
+    }
+    .brand-mark img { height: 36px; width: auto; border-radius: 8px; }
+    .brand-mark span { font-size: 1rem; }
+    .brand-mark em { font-style: normal; color: var(--violet-hot); }
+    .buybar-actions { display: flex; align-items: center; gap: 0.75rem; flex-wrap: wrap; justify-content: flex-end; }
+    .price-pill {
+      font-weight: 700; font-size: 0.95rem;
+      color: var(--price);
+      padding: 0.35rem 0.7rem;
+      border: 1px solid rgba(251, 191, 36, 0.35);
+      border-radius: 999px;
+      background: rgba(251, 191, 36, 0.08);
+    }
+
+    .btn {
+      display: inline-flex; align-items: center; justify-content: center; gap: 0.45rem;
+      font-family: var(--font-body); font-weight: 600; font-size: 0.95rem;
+      padding: 0.75rem 1.25rem; border-radius: 999px; border: 1px solid transparent;
+      cursor: pointer; transition: transform 0.2s ease, background 0.2s ease, border-color 0.2s ease;
+    }
+    .btn:hover { transform: translateY(-1px); }
+    .btn-primary {
+      background: linear-gradient(135deg, #9333ea, #7c3aed 45%, #2563eb);
+      color: #fff;
+      box-shadow: 0 0 0 1px rgba(168, 85, 247, 0.35), 0 12px 40px rgba(124, 58, 237, 0.35);
+    }
+    .btn-ghost {
+      background: transparent; color: var(--text);
+      border-color: rgba(244, 240, 255, 0.18);
+    }
+    .btn-ghost:hover { border-color: var(--violet-hot); }
+    .btn-whatsapp { background: #128C7E; color: #fff; }
+
+    .hero {
+      position: relative;
+      padding: 3.5rem 0 1rem;
+      overflow: hidden;
+    }
+    .hero-grid {
+      display: grid;
+      gap: 2rem;
+      align-items: end;
+    }
+    @media (min-width: 900px) {
+      .hero { min-height: 92vh; display: flex; align-items: stretch; padding-top: 2.5rem; }
+      .hero-grid {
+        grid-template-columns: 0.95fr 1.05fr;
+        align-items: center;
+        width: 100%;
+      }
+    }
+    .eyebrow {
+      display: inline-flex; align-items: center; gap: 0.5rem;
+      font-size: 0.78rem; font-weight: 600; letter-spacing: 0.14em; text-transform: uppercase;
+      color: var(--cyan); margin-bottom: 1rem;
+    }
+    .eyebrow::before {
+      content: ""; width: 8px; height: 8px; border-radius: 50%;
+      background: var(--ok); box-shadow: 0 0 12px var(--ok);
+      animation: pulse 2s ease-in-out infinite;
+    }
+    @keyframes pulse {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.55; transform: scale(0.85); }
+    }
+    .hero h1 {
+      font-family: var(--font-display);
+      font-weight: 800;
+      font-size: clamp(2.6rem, 6vw, 4.4rem);
+      line-height: 0.98;
+      letter-spacing: -0.03em;
+      margin-bottom: 1rem;
+    }
+    .hero h1 .ops { color: var(--violet-hot); }
+    .hero-lead {
+      font-size: 1.15rem; color: var(--muted); max-width: 34ch; margin-bottom: 1.75rem;
+    }
+    .cta-row { display: flex; flex-wrap: wrap; gap: 0.75rem; margin-bottom: 1.5rem; }
+    .trust-row {
+      display: flex; flex-wrap: wrap; gap: 0.6rem 1.1rem;
+      font-size: 0.88rem; color: var(--muted);
+    }
+    .trust-row strong { color: var(--text); font-weight: 600; }
+
+    .hero-visual {
+      position: relative;
+      animation: rise 0.9s ease-out both;
+    }
+    @keyframes rise {
+      from { opacity: 0; transform: translateY(28px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .hero-shot {
+      border-radius: 16px 16px 0 0;
+      border: 1px solid var(--line);
+      border-bottom: 0;
+      overflow: hidden;
+      background: #0f0d16;
+      box-shadow: 0 -20px 80px rgba(124, 58, 237, 0.25);
+    }
+    .hero-shot img,
+    .hero-shot video {
+      width: 100%;
+      height: auto;
+      object-fit: contain;
+      object-position: center;
+      min-height: 240px;
+      max-height: min(58vh, 520px);
+      display: block;
+      background: #0f0d16;
+    }
+    @media (min-width: 900px) {
+      .hero-shot {
+        border-radius: 20px 0 0 20px;
+        border-right: 0;
+        border-bottom: 1px solid var(--line);
+        margin-right: calc(-1 * max(0px, (100vw - 1120px) / 2 - 1rem));
+      }
+      .hero-shot img,
+      .hero-shot video {
+        max-height: none;
+        min-height: 360px;
+        height: min(70vh, 620px);
+        object-fit: contain;
+      }
+    }
+
+    section { padding: 4.5rem 0; }
+    .section-kicker {
+      font-size: 0.75rem; font-weight: 700; letter-spacing: 0.16em; text-transform: uppercase;
+      color: var(--violet-hot); margin-bottom: 0.65rem;
+    }
+    .section-title {
+      font-family: var(--font-display); font-weight: 700;
+      font-size: clamp(1.7rem, 3.2vw, 2.4rem);
+      letter-spacing: -0.02em; margin-bottom: 0.65rem; max-width: 22ch;
+    }
+    .section-sub { color: var(--muted); max-width: 52ch; margin-bottom: 2rem; font-size: 1.05rem; }
+
+    .pain {
+      background: rgba(251, 113, 133, 0.06);
+      border-top: 1px solid rgba(251, 113, 133, 0.18);
+      border-bottom: 1px solid rgba(251, 113, 133, 0.18);
+    }
+    .pain-grid {
+      display: grid; gap: 1rem;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    }
+    .pain-item {
+      padding: 1.1rem 0;
+      border-top: 1px solid rgba(244, 240, 255, 0.08);
+    }
+    .pain-item h3 {
+      font-family: var(--font-display); font-size: 1.05rem; margin-bottom: 0.35rem; color: #fecdd3;
+    }
+    .pain-item p { color: var(--muted); font-size: 0.95rem; }
+
+    .engines {
+      display: grid; gap: 0;
+      border: 1px solid var(--line); border-radius: var(--radius); overflow: hidden;
+      background: var(--surface);
+    }
+    .engine {
+      display: grid; grid-template-columns: auto 1fr auto; gap: 1rem; align-items: center;
+      padding: 1rem 1.25rem;
+      border-bottom: 1px solid rgba(244, 240, 255, 0.06);
+    }
+    .engine:last-child { border-bottom: 0; }
+    .engine-icon {
+      width: 40px; height: 40px; border-radius: 10px;
+      display: grid; place-items: center;
+      background: rgba(168, 85, 247, 0.12);
+      color: var(--violet-hot); font-weight: 700; font-size: 0.75rem;
+      font-family: var(--font-display);
+    }
+    .engine h3 { font-size: 0.98rem; font-weight: 600; }
+    .engine p { font-size: 0.85rem; color: var(--muted); }
+    .badge {
+      font-size: 0.72rem; font-weight: 700; letter-spacing: 0.04em; text-transform: uppercase;
+      padding: 0.28rem 0.55rem; border-radius: 999px; white-space: nowrap;
+    }
+    .badge-2way { background: rgba(52, 211, 153, 0.15); color: var(--ok); }
+    .badge-1way { background: rgba(56, 189, 248, 0.15); color: var(--cyan); }
+    .badge-cfg { background: rgba(168, 85, 247, 0.15); color: var(--violet-hot); }
+
+    .split {
+      display: grid; gap: 2.5rem; align-items: center;
+    }
+    @media (min-width: 860px) {
+      .split { grid-template-columns: 1.1fr 0.9fr; }
+      .split.reverse { grid-template-columns: 0.9fr 1.1fr; }
+      .split.reverse .copy { order: 2; }
+    }
+    .check-list { list-style: none; display: grid; gap: 0.85rem; }
+    .check-list li {
+      display: grid; grid-template-columns: 22px 1fr; gap: 0.7rem;
+      color: var(--muted); font-size: 0.98rem;
+    }
+    .check-list li::before {
+      content: ""; width: 18px; height: 18px; margin-top: 0.2rem; border-radius: 50%;
+      background:
+        radial-gradient(circle at center, var(--ok) 0 35%, transparent 36%),
+        rgba(52, 211, 153, 0.18);
+      border: 1px solid rgba(52, 211, 153, 0.45);
+    }
+    .check-list strong { color: var(--text); }
+
+    .dash-frame {
+      border-radius: var(--radius);
+      border: 1px solid var(--line);
+      overflow: hidden;
+      background: #0c0a12;
+      box-shadow: 0 24px 60px rgba(0, 0, 0, 0.45);
+    }
+    .dash-frame img { width: 100%; }
+
+    .offer {
+      border: 1px solid var(--line);
+      border-radius: 24px;
+      padding: clamp(1.5rem, 4vw, 2.75rem);
+      background:
+        radial-gradient(600px 280px at 100% 0%, rgba(168, 85, 247, 0.22), transparent 60%),
+        var(--surface);
+      display: grid; gap: 2rem;
+    }
+    @media (min-width: 800px) {
+      .offer { grid-template-columns: 1.2fr 0.8fr; align-items: center; }
+    }
+    .price-block .amount {
+      font-family: var(--font-display); font-weight: 800;
+      font-size: clamp(3rem, 7vw, 4.5rem); letter-spacing: -0.04em;
+      color: var(--price); line-height: 1;
+    }
+    .price-block .once { color: var(--muted); margin: 0.4rem 0 1.25rem; }
+    .included { list-style: none; display: grid; gap: 0.65rem; margin-bottom: 1.5rem; }
+    .included li {
+      display: flex; gap: 0.55rem; align-items: flex-start;
+      font-size: 0.98rem; color: var(--text);
+    }
+    .included li span { color: var(--violet-hot); font-weight: 700; }
+
+    .support-card {
+      border: 1px solid rgba(18, 140, 126, 0.4);
+      background: rgba(18, 140, 126, 0.1);
+      border-radius: 18px;
+      padding: 1.35rem 1.4rem;
+    }
+    .support-card h3 {
+      font-family: var(--font-display); font-size: 1.15rem; margin-bottom: 0.35rem;
+    }
+    .support-card p { color: var(--muted); font-size: 0.92rem; margin-bottom: 1rem; }
+    .phone {
+      font-family: var(--font-display); font-weight: 700; font-size: 1.35rem;
+      letter-spacing: 0.02em; margin-bottom: 0.85rem;
+    }
+
+    .faq details {
+      border-bottom: 1px solid rgba(244, 240, 255, 0.08);
+      padding: 1rem 0;
+    }
+    .faq summary {
+      cursor: pointer; font-weight: 600; list-style: none;
+      display: flex; justify-content: space-between; gap: 1rem; align-items: center;
+    }
+    .faq summary::-webkit-details-marker { display: none; }
+    .faq summary::after { content: "+"; color: var(--violet-hot); font-size: 1.3rem; font-weight: 400; }
+    .faq details[open] summary::after { content: "–"; }
+    .faq details p { color: var(--muted); margin-top: 0.65rem; max-width: 68ch; }
+
+    footer {
+      padding: 2.5rem 0 3rem;
+      border-top: 1px solid var(--line);
+      color: var(--muted); font-size: 0.88rem;
+      display: flex; flex-wrap: wrap; gap: 1rem; justify-content: space-between;
+    }
+
+    .reveal {
+      animation: rise 0.8s ease-out both;
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        animation: none !important; transition: none !important;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="buybar">
+    <div class="wrap buybar-inner">
+      <a class="brand-mark" href="#top">
+        <img src="logo.png" alt="Shopify Ops"/>
+        <span>Shopify <em>Ops</em></span>
+      </a>
+      <div class="buybar-actions">
+        <span class="price-pill">$550 USD · one-time</span>
+        <a class="btn btn-ghost" href="https://wa.me/27686661814" target="_blank" rel="noopener">WhatsApp support</a>
+        <a class="btn btn-primary" href="#buy">Get Shopify Ops</a>
+      </div>
+    </div>
+  </div>
+
+  <header class="hero" id="top">
+    <div class="wrap hero-grid">
+      <div>
+        <p class="eyebrow">Operations dashboard live</p>
+        <h1>Shopify <span class="ops">Ops</span></h1>
+        <p class="hero-lead">Two-way Odoo ↔ Shopify sync with a modern ops dashboard — see failures, retry jobs, and stay in control.</p>
+        <div class="cta-row">
+          <a class="btn btn-primary" href="#buy">Buy for $550</a>
+          <a class="btn btn-ghost" href="#demo">Watch demo</a>
+        </div>
+        <div class="trust-row">
+          <span><strong>Free 24/7</strong> WhatsApp / call</span>
+          <span><strong>Free</strong> Odoo version upgrades</span>
+          <span><strong>30-day</strong> money-back guarantee</span>
+          <span><strong>2-way</strong> · optional 1-way per flow</span>
+        </div>
+      </div>
+      <div class="hero-visual" id="demo">
+        <div class="hero-shot">
+          <video
+            src="shopify.mp4"
+            controls
+            playsinline
+            preload="metadata"
+            poster="dashboard.png"
+            title="Shopify Ops product demo">
+            Your browser does not support the video tag.
+          </video>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <section class="pain">
+    <div class="wrap">
+      <p class="section-kicker">The real cost of “it mostly syncs”</p>
+      <h2 class="section-title">Silent sync failures kill weekends</h2>
+      <p class="section-sub">Wrong stock, stale fulfillments, and order edits that never hit the invoice. Shopify Ops turns that mess into a command center you can actually run.</p>
+      <div class="pain-grid">
+        <div class="pain-item">
+          <h3>Black-box connectors</h3>
+          <p>Jobs fail and nobody notices until a customer complains. You need visibility, not hope.</p>
+        </div>
+        <div class="pain-item">
+          <h3>One-size sync</h3>
+          <p>Some flows must be two-way. Some orders should stay one-way. You need the switch — not a rigid pipeline.</p>
+        </div>
+        <div class="pain-item">
+          <h3>Support that ghosts you</h3>
+          <p>Marketplace modules often vanish after payment. You get a human on WhatsApp or a call, 24/7.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="dashboard">
+    <div class="wrap split">
+      <div class="copy">
+        <p class="section-kicker">Modern monitoring</p>
+        <h2 class="section-title">Track every issue on one dashboard</h2>
+        <p class="section-sub">Live KPIs, sync-engine health, and a filterable activity log with one-click retry. Built for operators — not install-and-pray.</p>
+        <ul class="check-list">
+          <li><span><strong>Updates pulled, success rate, queue depth,</strong> failures needing attention, and average queue time — at a glance.</span></li>
+          <li><span><strong>Per-engine status</strong> for orders, invoices, addresses, fulfillment, inventory, customers, products, prices, metafields, and discounts.</span></li>
+          <li><span><strong>Retry now</strong> and jump straight into the sync log when something breaks.</span></li>
+        </ul>
+      </div>
+      <div class="dash-frame reveal">
+        <img src="dashboard.png" alt="Shopify Ops dashboard activity log with Retry now actions"/>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="wrap">
+      <p class="section-kicker">Sync engines</p>
+      <h2 class="section-title">Two-way by default. One-way when you say so.</h2>
+      <p class="section-sub">Run a full commerce loop between Odoo and Shopify — then lock individual flows or orders to a single direction when your process demands it.</p>
+      <div class="engines">
+        <div class="engine">
+          <div class="engine-icon">OR</div>
+          <div>
+            <h3>Order pull &amp; order-edit invoices</h3>
+            <p>Pull orders, handle edits, keep sale orders and invoices aligned — including discounts and shipping lines.</p>
+          </div>
+          <span class="badge badge-cfg">Configurable</span>
+        </div>
+        <div class="engine">
+          <div class="engine-icon">AD</div>
+          <div>
+            <h3>Address sync</h3>
+            <p>Shipping ↔ delivery address with direction control. Billing mapped Shopify → Odoo on the order.</p>
+          </div>
+          <span class="badge badge-2way">2-way ready</span>
+        </div>
+        <div class="engine">
+          <div class="engine-icon">FF</div>
+          <div>
+            <h3>Fulfillment sync</h3>
+            <p>Push + pull fulfillments with tracking — keep warehouse and storefront in lockstep.</p>
+          </div>
+          <span class="badge badge-2way">Push + pull</span>
+        </div>
+        <div class="engine">
+          <div class="engine-icon">IN</div>
+          <div>
+            <h3>Inventory push</h3>
+            <p>Odoo free qty → Shopify locations. Toggle on when you’re ready; leave disabled until stock is trusted.</p>
+          </div>
+          <span class="badge badge-1way">Odoo → Shopify</span>
+        </div>
+        <div class="engine">
+          <div class="engine-icon">PR</div>
+          <div>
+            <h3>Products, prices &amp; customers</h3>
+            <p>Catalog and contact sync with direction options. Price sync defaults Odoo → Shopify and only pushes changes.</p>
+          </div>
+          <span class="badge badge-cfg">Direction control</span>
+        </div>
+        <div class="engine">
+          <div class="engine-icon">MF</div>
+          <div>
+            <h3>Metafields &amp; discount catalogue</h3>
+            <p>Map metafields both ways. Keep discount rules visible and synced under Shopify Ops.</p>
+          </div>
+          <span class="badge badge-2way">2-way maps</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="wrap split reverse">
+      <div class="copy">
+        <p class="section-kicker">Built for production</p>
+        <h2 class="section-title">Queue, retry, audit — then sleep</h2>
+        <ul class="check-list">
+          <li><span>Every event hits a <strong>job queue</strong> with retries and a full <strong>audit log</strong>.</span></li>
+          <li><span>Webhook-ready for order updates; cron as the safety net.</span></li>
+          <li><span>Location mappings, metafield mappings, and discount catalogue under one Shopify Ops menu.</span></li>
+          <li><span>Designed for <strong>Odoo 19</strong> — and <strong>free upgrades</strong> when you move versions.</span></li>
+        </ul>
+      </div>
+      <div>
+        <p class="section-kicker">What you own</p>
+        <h2 class="section-title" style="max-width:none;margin-bottom:1rem;">One license. Real support. No drip.</h2>
+        <p class="section-sub" style="margin-bottom:0;">Pay once. Install on your Odoo.sh or self-hosted instance. Talk to a person when you need them — not a ticket black hole.</p>
+      </div>
+    </div>
+  </section>
+
+  <section id="buy">
+    <div class="wrap">
+      <div class="offer">
+        <div>
+          <p class="section-kicker">Odoo Marketplace · Leeno Consult</p>
+          <h2 class="section-title" style="max-width:none;">Shopify Ops</h2>
+          <div class="price-block">
+            <div class="amount">$550 USD</div>
+            <p class="once">One-time purchase · free Odoo version upgrades · 30-day money-back guarantee</p>
+          </div>
+          <ul class="included">
+            <li><span>✓</span> Full Shopify Ops module with modern operations dashboard</li>
+            <li><span>✓</span> 2-way sync engines with optional 1-way / direction controls</li>
+            <li><span>✓</span> Job queue, sync logs, retry actions, alerts</li>
+            <li><span>✓</span> Free 24/7 support — WhatsApp or call</li>
+            <li><span>✓</span> Free upgrades when you move Odoo versions</li>
+            <li><span>✓</span> 30-day money-back guarantee — no risk trial</li>
+          </ul>
+          <div class="cta-row">
+            <a class="btn btn-primary" href="#buy">Purchase on Odoo Apps — $550 USD</a>
+            <a class="btn btn-whatsapp" href="https://wa.me/27686661814?text=Hi%20-%20I%20want%20Shopify%20Ops%20for%20Odoo" target="_blank" rel="noopener">WhatsApp before you buy</a>
+          </div>
+        </div>
+        <div class="support-card">
+          <h3>Talk to us anytime</h3>
+          <p>Stuck on webhooks, mappings, or a failed job at 2am? Leeno Consult is on WhatsApp and phone — free with your license.</p>
+          <div class="phone"><a href="tel:+27686661814">+27 68 666 1814</a></div>
+          <a class="btn btn-whatsapp" style="width:100%;margin-bottom:0.75rem" href="https://wa.me/27686661814" target="_blank" rel="noopener">Open WhatsApp</a>
+          <p style="margin:0;font-size:0.88rem;color:var(--muted)">Not the right fit? <strong style="color:var(--text)">30-day money-back guarantee</strong> — message us and we’ll make it right.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="faq">
+    <div class="wrap">
+      <p class="section-kicker">FAQ</p>
+      <h2 class="section-title">Straight answers</h2>
+      <details open>
+        <summary>Is this two-way sync?</summary>
+        <p>Yes. Shopify Ops is built as a two-way operations layer. Individual engines (and order-level flows where configured) can be kept one-way when that matches how you run the business.</p>
+      </details>
+      <details>
+        <summary>Does it include a dashboard?</summary>
+        <p>Yes — a modern operations dashboard with live KPIs, per-engine health, failure counts, queue time, and an activity log with Retry now / View in logs.</p>
+      </details>
+      <details>
+        <summary>What about Odoo upgrades?</summary>
+        <p>Free Odoo version upgrades are included with your purchase so you are not stuck on an old major version.</p>
+      </details>
+      <details>
+        <summary>How do I get support?</summary>
+        <p>Free 24/7 support from Leeno Consult via WhatsApp or call at +27 68 666 1814. Message before you buy if you want a fit-check for your stack.</p>
+      </details>
+      <details>
+        <summary>Is there a money-back guarantee?</summary>
+        <p>Yes. 30-day money-back guarantee. If Shopify Ops isn’t right for your stack, contact Leeno Consult within 30 days and we’ll refund you.</p>
+      </details>
+      <details>
+        <summary>Where does it run?</summary>
+        <p>Custom modules install on Odoo.sh and self-hosted Odoo. Odoo Online (SaaS) does not allow custom addons.</p>
+      </details>
+    </div>
+  </section>
+
+  <footer class="wrap">
+    <div>Shopify Ops · Leeno Consult · Odoo Marketplace · $550 USD</div>
+    <div><a href="tel:+27686661814">+27 68 666 1814</a> · 24/7 WhatsApp / call · 30-day money-back</div>
+  </footer>
+</body>
+</html>

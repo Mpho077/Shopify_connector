@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <menuitem id="menu_shopify_ops_root" name="Shopify Ops" sequence="50" groups="sales_team.group_sale_salesman"/>
+    <menuitem id="menu_shopify_ops_dashboard" name="Dashboard" parent="menu_shopify_ops_root" action="action_shopify_ops_dashboard" sequence="1"/>
+    <menuitem id="menu_shopify_ops_jobs" name="Orders" parent="menu_shopify_ops_root" action="action_shopify_sync_job" sequence="10"/>
+    <menuitem id="menu_shopify_ops_logs" name="Sync Logs" parent="menu_shopify_ops_root" action="action_shopify_sync_log" sequence="20"/>
+    <menuitem id="menu_shopify_ops_discounts" name="Discounts" parent="menu_shopify_ops_root" action="action_shopify_discount" sequence="25"/>
+    <menuitem id="menu_shopify_ops_metafields" name="Metafield Mappings" parent="menu_shopify_ops_root" action="action_shopify_metafield_map" sequence="30"/>
+    <menuitem id="menu_shopify_ops_locations" name="Location Mappings" parent="menu_shopify_ops_root" action="action_shopify_location_map" sequence="40"/>
+</odoo>

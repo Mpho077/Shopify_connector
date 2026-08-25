@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <!-- Sidebar page: Alerts = warning/error log entries, newest first -->
+    <record id="action_shopify_ops_alerts" model="ir.actions.act_window">
+        <field name="name">Alerts</field>
+        <field name="res_model">shopify.sync.log</field>
+        <field name="view_mode">list,form</field>
+        <field name="domain">[('level', 'in', ('warning', 'error'))]</field>
+    </record>
+    <!-- Sidebar page: Health = our cron engines and their run state -->
+    <record id="action_shopify_ops_health" model="ir.actions.act_window">
+        <field name="name">Sync Engine Health</field>
+        <field name="res_model">ir.cron</field>
+        <field name="view_mode">list,form</field>
+        <field name="domain">[('cron_name', 'ilike', 'Shopify Ops%')]</field>
+    </record>
+    <!-- Sidebar page: Integrations = the module's settings form -->
+    <record id="action_shopify_ops_integrations" model="ir.actions.act_window">
+        <field name="name">Integrations</field>
+        <field name="res_model">res.config.settings</field>
+        <field name="view_mode">form</field>
+        <field name="target">current</field>
+    </record>
+    <!-- KPI card targets: filtered job lists -->
+    <record id="action_shopify_ops_jobs_pulled" model="ir.actions.act_window">
+        <field name="name">Pulled Orders</field>
+        <field name="res_model">shopify.sync.job</field>
+        <field name="view_mode">list,form</field>
+        <field name="domain">[('job_type', '=', 'order_pull'), ('state', '=', 'done')]</field>
+    </record>
+    <record id="action_shopify_ops_jobs_queue" model="ir.actions.act_window">
+        <field name="name">Jobs in Queue</field>
+        <field name="res_model">shopify.sync.job</field>
+        <field name="view_mode">list,form</field>
+        <field name="domain">[('state', 'in', ('pending', 'processing'))]</field>
+    </record>
+    <record id="action_shopify_ops_jobs_failed" model="ir.actions.act_window">
+        <field name="name">Failed Jobs</field>
+        <field name="res_model">shopify.sync.job</field>
+        <field name="view_mode">list,form</field>
+        <field name="domain">[('state', '=', 'failed')]</field>
+    </record>
+</odoo>
